@@ -14,20 +14,71 @@ const emptySchema = {
   additionalProperties: false,
 };
 
-export function createToolHandlers(getState, onChange) {
-  const run = (operation) => {
-    const result = operation(getState());
-    onChange();
-    return result;
+export function summarizeToolEvent({ name, result, error }) {
+  if (error) return error;
+
+  switch (name) {
+    case "get_expedition_state":
+      return `${result.surveysRemaining} surveys · ${result.chart.marked}/${result.chart.totalCells} cells committed`;
+    case "survey_region":
+      return `${result.rowTransect.length + result.columnTransect.length - 1} exact cells · ${result.surveysRemaining} charges left`;
+    case "inspect_chart":
+      return `${result.committedCells.length} committed · ${result.humanObservations.length} human readings`;
+    case "propose_chart_patch":
+      return `${result.stagedCells} cells staged · awaiting human approval`;
+    case "focus_human_attention":
+      return `question pinned at row ${result.focusedCell.row}, column ${result.focusedCell.column} · awaiting human`;
+    case "consult_compass":
+      return `${result.band.label} · ${result.consultationsRemaining} checks left`;
+    default:
+      return "Tool completed";
+  }
+}
+
+export function formatToolInput(name, input = {}) {
+  if (name === "survey_region") return `{ row: ${input.row}, column: ${input.column} }`;
+  if (name === "propose_chart_patch") return `{ cells: ${input.cells?.length || 0}, rationale: … }`;
+  if (name === "focus_human_attention") return `{ row: ${input.row}, column: ${input.column}, note: … }`;
+  return "{}";
+}
+
+export function createToolHandlers(getState, onChange, onToolEvent = () => {}) {
+  const notify = (event) => {
+    try {
+      onToolEvent(event);
+    } catch (observerError) {
+      console.error("Seven Transects could not render a WebMCP trace event", observerError);
+    }
+  };
+
+  const invoke = (name, input, operation, mutates = false) => {
+    try {
+      const result = operation(getState());
+      if (mutates) onChange();
+      notify({ name, input: input || {}, result, access: mutates ? "write" : "read", status: "success" });
+      return result;
+    } catch (cause) {
+      notify({
+        name,
+        input: input || {},
+        error: cause instanceof Error ? cause.message : String(cause),
+        access: mutates ? "write" : "read",
+        status: "error",
+      });
+      throw cause;
+    }
   };
 
   return {
-    get_expedition_state: async () => expeditionStateForAgent(getState()),
-    survey_region: async (input) => run((state) => surveyRegion(state, input)),
-    inspect_chart: async () => inspectChart(getState()),
-    propose_chart_patch: async (input) => run((state) => proposeChartPatch(state, input)),
-    focus_human_attention: async (input) => run((state) => focusHumanAttention(state, input)),
-    consult_compass: async () => run((state) => consultChart(state)),
+    get_expedition_state: async (input = {}) =>
+      invoke("get_expedition_state", input, (state) => expeditionStateForAgent(state)),
+    survey_region: async (input) => invoke("survey_region", input, (state) => surveyRegion(state, input), true),
+    inspect_chart: async (input = {}) => invoke("inspect_chart", input, (state) => inspectChart(state)),
+    propose_chart_patch: async (input) =>
+      invoke("propose_chart_patch", input, (state) => proposeChartPatch(state, input), true),
+    focus_human_attention: async (input) =>
+      invoke("focus_human_attention", input, (state) => focusHumanAttention(state, input), true),
+    consult_compass: async (input = {}) => invoke("consult_compass", input, (state) => consultChart(state), true),
   };
 }
 
@@ -141,17 +192,17 @@ export function buildToolDefinitions(handlers) {
 export async function registerWebMCP(definitions, onStatus) {
   const modelContext = document.modelContext ?? navigator.modelContext ?? globalThis.modelContext;
   if (typeof modelContext?.registerTool !== "function") {
-    onStatus({ state: "fallback", message: "Site tools unavailable · preview mode" });
+    onStatus({ state: "fallback", message: "WebMCP unavailable · simulator active" });
     return false;
   }
 
   try {
     await Promise.all(definitions.map((definition) => modelContext.registerTool(definition)));
-    onStatus({ state: "ready", message: `${definitions.length} site tools ready` });
+    onStatus({ state: "ready", message: `WebMCP connected · ${definitions.length} tools` });
     return true;
   } catch (error) {
     console.error("Seven Transects could not register WebMCP tools", error);
-    onStatus({ state: "error", message: "Site tool registration failed" });
+    onStatus({ state: "error", message: "WebMCP registration failed" });
     return false;
   }
 }
