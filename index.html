@@ -33,22 +33,51 @@
 
       <main id="top">
         <section class="hero" aria-labelledby="heroTitle">
-          <div class="eyebrow">A human + agent field experiment</div>
-          <h1 id="heroTitle">Map what neither of you<br />can see alone.</h1>
-          <p>
-            Your agent can survey the hidden island, but only through narrow instruments.
-            You can see the whole chart, but not the truth beneath the fog. Trade evidence,
-            review translucent proposals, and chart a reliable coast together.
-          </p>
-          <div class="hero-actions">
-            <button class="button button-primary" id="copyPromptButton" type="button">
-              Copy agent prompt
-            </button>
-            <button class="button button-quiet" id="demoTurnButton" type="button">
-              Simulate next agent move
-            </button>
+          <div class="hero-copy">
+            <div class="eyebrow">A WebMCP-native human + agent experiment</div>
+            <h1 id="heroTitle">Map what neither of you<br />can see alone.</h1>
+            <p>
+              WebMCP turns this live page into six typed tools. Your agent spends scarce
+              surveys and stages evidence; you read the noisy field map and decide what
+              becomes real. Neither participant gets the whole answer.
+            </p>
+            <div class="hero-actions">
+              <button class="button button-primary" id="demoTurnButton" type="button">
+                Run the WebMCP demo
+              </button>
+              <button class="button button-quiet" id="copyPromptButton" type="button">
+                Copy prompt for ChatGPT
+              </button>
+            </div>
+            <p class="hero-demo-note">The demo uses the exact same handlers as a native browser agent.</p>
+            <p class="prompt-feedback" id="promptFeedback" role="status" aria-live="polite"></p>
           </div>
-          <p class="prompt-feedback" id="promptFeedback" role="status" aria-live="polite"></p>
+
+          <aside class="protocol-primer" aria-labelledby="protocolPrimerTitle">
+            <div class="protocol-primer-status">
+              <span>WebMCP / live page contract</span>
+              <span>6 typed tools</span>
+            </div>
+            <h2 id="protocolPrimerTitle">The agent doesn’t click through the fog. The page gives it a contract.</h2>
+            <ol class="protocol-flow">
+              <li>
+                <span>01</span>
+                <div><strong>Discover</strong><code>document.modelContext.registerTool(…)</code></div>
+              </li>
+              <li>
+                <span>02</span>
+                <div><strong>Call</strong><code>survey_region({ row: 6, column: 6 })</code></div>
+              </li>
+              <li>
+                <span>03</span>
+                <div><strong>Handoff</strong><p>A proposal appears on this same chart. Only you can commit it.</p></div>
+              </li>
+            </ol>
+            <div class="protocol-dependency">
+              <strong>Remove WebMCP</strong>
+              <span>The agent loses its surveys, structured answers, and consent path—the collaboration stops.</span>
+            </div>
+          </aside>
         </section>
 
         <section class="expedition" aria-label="Seven Transects expedition workspace">
@@ -124,7 +153,7 @@
 
             <div class="field-lens-callout">
               <span class="lens-icon" aria-hidden="true"></span>
-              <p><strong>Your field lens is noisy.</strong> Soft color beneath the fog is a human-only visual clue. Survey glyphs are exact.</p>
+              <p><strong>Your field lens is noisy.</strong> Soft color beneath the fog is a human-facing visual clue—not part of any tool result. Survey glyphs are exact.</p>
             </div>
 
             <div class="focus-banner" id="focusBanner" hidden></div>
@@ -150,23 +179,36 @@
           <aside class="panel notes-panel" aria-labelledby="fieldNotesTitle">
             <div class="panel-heading notes-heading">
               <div>
-                <span class="panel-kicker">Live handoff</span>
-                <h2 id="fieldNotesTitle">Field notes</h2>
+                <span class="panel-kicker">Same page, shared state</span>
+                <h2 id="fieldNotesTitle">Agent ↔ human</h2>
               </div>
               <span class="pending-count" id="pendingCount">0 pending</span>
             </div>
+            <section class="protocol-console" aria-labelledby="protocolTraceTitle">
+              <div class="protocol-console-heading">
+                <div>
+                  <span class="trace-light" aria-hidden="true"></span>
+                  <h3 id="protocolTraceTitle">WebMCP call trace</h3>
+                </div>
+                <span id="traceCount">0 calls</span>
+              </div>
+              <p class="protocol-console-intro">Every agent action enters through a registered page tool. Mutations stay visible and reviewable.</p>
+              <div class="protocol-trace" id="protocolTrace" aria-live="polite"></div>
+            </section>
+            <div class="feed-label"><span>Shared decisions</span></div>
             <div class="notes-feed" id="notesFeed" aria-live="polite"></div>
           </aside>
         </section>
 
         <section class="tool-deck" aria-labelledby="toolDeckTitle">
           <div class="tool-deck-copy">
-            <span class="eyebrow">The rules are the interface</span>
-            <h2 id="toolDeckTitle">Six narrow tools. No secret back door.</h2>
+            <span class="eyebrow">Why this needs WebMCP</span>
+            <h2 id="toolDeckTitle">A protocol, not pixel automation.</h2>
             <p>
-              The agent cannot read the hidden map or paint committed cells. It can spend a
-              limited survey charge, inspect the shared chart, stage a proposal, focus your
-              attention, and measure progress. You keep the pencil and the final say.
+              A click-driving agent would have to guess at pixels and scrape visual state.
+              Here it discovers explicit capabilities, receives typed evidence, and can only
+              make the bounded changes each tool permits. Every mutation appears in the page;
+              you keep the pencil and the final say.
             </p>
           </div>
           <ol class="tool-list">

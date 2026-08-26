@@ -18,7 +18,13 @@ import {
   toCoordinate,
   toIndex,
 } from "./game.js";
-import { buildToolDefinitions, createToolHandlers, registerWebMCP } from "./webmcp.js";
+import {
+  buildToolDefinitions,
+  createToolHandlers,
+  formatToolInput,
+  registerWebMCP,
+  summarizeToolEvent,
+} from "./webmcp.js";
 
 const elements = {
   accuracyUnit: document.querySelector("#accuracyUnit"),
@@ -45,12 +51,14 @@ const elements = {
   palette: document.querySelector("#palette"),
   pendingCount: document.querySelector("#pendingCount"),
   promptFeedback: document.querySelector("#promptFeedback"),
+  protocolTrace: document.querySelector("#protocolTrace"),
   revealButton: document.querySelector("#revealButton"),
   rowAxis: document.querySelector("#rowAxis"),
   scoreButton: document.querySelector("#scoreButton"),
   seedInput: document.querySelector("#seedInput"),
   surveyCount: document.querySelector("#surveyCount"),
   toast: document.querySelector("#toast"),
+  traceCount: document.querySelector("#traceCount"),
   webmcpStatus: document.querySelector("#webmcpStatus"),
 };
 
@@ -59,6 +67,8 @@ let selectedTerrain = "water";
 let drawing = false;
 let activeGridIndex = 0;
 let toastTimer;
+let protocolEvents = [];
+let protocolSequence = 0;
 
 function setSiteToolStatus({ state: statusState, message }) {
   elements.webmcpStatus.dataset.state = statusState;
@@ -70,6 +80,59 @@ function showToast(message) {
   elements.toast.textContent = message;
   elements.toast.classList.add("is-visible");
   toastTimer = setTimeout(() => elements.toast.classList.remove("is-visible"), 2600);
+}
+
+function renderProtocolTrace() {
+  elements.traceCount.textContent = `${protocolSequence} ${protocolSequence === 1 ? "call" : "calls"}`;
+  if (!protocolEvents.length) {
+    const empty = document.createElement("p");
+    empty.className = "protocol-trace-empty";
+    empty.textContent = "No calls yet. Run the demo to watch the same tool path a WebMCP agent uses.";
+    elements.protocolTrace.replaceChildren(empty);
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  for (const event of protocolEvents) {
+    const article = document.createElement("article");
+    article.className = `trace-event trace-${event.status}`;
+
+    const heading = document.createElement("div");
+    heading.className = "trace-event-heading";
+    const badge = document.createElement("span");
+    badge.className = `trace-access trace-access-${event.access}`;
+    badge.textContent = event.access;
+    const sequence = document.createElement("span");
+    sequence.textContent = `#${String(event.sequence).padStart(2, "0")}`;
+    heading.append(badge, sequence);
+
+    const call = document.createElement("code");
+    const toolName = document.createElement("strong");
+    toolName.textContent = event.name;
+    const input = document.createElement("span");
+    input.textContent = `(${event.input})`;
+    call.append(toolName, input);
+
+    const result = document.createElement("p");
+    result.textContent = `${event.status === "error" ? "Error" : "Result"} → ${event.summary}`;
+    article.append(heading, call, result);
+    fragment.append(article);
+  }
+  elements.protocolTrace.replaceChildren(fragment);
+}
+
+function recordToolEvent(event) {
+  protocolSequence += 1;
+  protocolEvents.unshift({
+    access: event.access,
+    input: formatToolInput(event.name, event.input),
+    name: event.name,
+    sequence: protocolSequence,
+    status: event.status,
+    summary: summarizeToolEvent(event),
+  });
+  protocolEvents = protocolEvents.slice(0, 8);
+  renderProtocolTrace();
 }
 
 function formatPercent(value) {
@@ -234,9 +297,21 @@ function proposalCard(proposal) {
   const confidence = document.createElement("div");
   confidence.className = "confidence-row";
   const averageConfidence = proposal.cells.reduce((sum, cell) => sum + cell.confidence, 0) / proposal.cells.length;
-  const exactCount = proposal.cells.filter((cell) => cell.basis === "exact").length;
+  const basisCounts = proposal.cells.reduce(
+    (counts, cell) => {
+      counts[cell.basis] = (counts[cell.basis] || 0) + 1;
+      return counts;
+    },
+    {},
+  );
   const confidenceBreakdown = document.createElement("span");
-  confidenceBreakdown.textContent = `${exactCount} exact · ${proposal.cells.length - exactCount} inferred`;
+  confidenceBreakdown.textContent = [
+    basisCounts.exact && `${basisCounts.exact} exact`,
+    basisCounts.inferred && `${basisCounts.inferred} inferred`,
+    basisCounts["human-reading"] && `${basisCounts["human-reading"]} human`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
   const confidenceAverage = document.createElement("strong");
   confidenceAverage.textContent = `${Math.round(averageConfidence * 100)}% avg`;
   confidence.append(confidenceBreakdown, confidenceAverage);
@@ -370,13 +445,18 @@ function renderStats() {
   elements.consultCount.textContent = state.consultationsRemaining;
   elements.revealButton.disabled = state.revealed;
   elements.scoreButton.disabled = state.revealed || state.consultationsRemaining === 0;
-  elements.demoTurnButton.disabled = state.revealed || state.surveysRemaining === 0;
+  const hasUncommittedReading = state.humanObservations.some((observation) => {
+    const mark = state.draft[toIndex(observation.row, observation.column)];
+    return !mark || mark.terrain !== observation.terrain;
+  });
+  elements.demoTurnButton.disabled = state.revealed || (state.surveysRemaining === 0 && !hasUncommittedReading);
 }
 
 function render() {
   renderStats();
   renderGrid();
   renderNotes();
+  renderProtocolTrace();
 }
 
 function setSelectedTerrain(terrain) {
@@ -426,6 +506,8 @@ async function runPreviewTurn() {
       showToast("Answer the agent's field-reading question first.");
       return;
     }
+    await toolHandlers.get_expedition_state();
+    const sharedChart = await toolHandlers.inspect_chart();
     const route = [
       { row: 6, column: 6 },
       { row: 3, column: 3 },
@@ -437,16 +519,33 @@ async function runPreviewTurn() {
     ];
     const used = new Set(state.surveys.map((survey) => `${survey.row}:${survey.column}`));
     const center = route.find((candidate) => !used.has(`${candidate.row}:${candidate.column}`));
-    if (!center || state.surveysRemaining === 0) return;
-    const survey = await toolHandlers.survey_region(center);
-    const cells = deduplicateSurveyCells([survey]);
+    const survey = center && state.surveysRemaining > 0 ? await toolHandlers.survey_region(center) : null;
+    const cells = survey ? deduplicateSurveyCells([survey]) : [];
     const exactKeys = new Set(cells.map((cell) => `${cell.row}:${cell.column}`));
-    const inferenceCandidates = [
-      { row: center.row + 1, column: center.column + 1 },
-      { row: center.row - 1, column: center.column + 1 },
-      { row: center.row + 1, column: center.column - 1 },
-    ];
-    const inferred = inferenceCandidates.find(
+    const committedKeys = new Set(sharedChart.committedCells.map((cell) => `${cell.row}:${cell.column}:${cell.terrain}`));
+    for (const observation of sharedChart.humanObservations) {
+      const coordinateKey = `${observation.row}:${observation.column}`;
+      if (exactKeys.has(coordinateKey) || committedKeys.has(`${coordinateKey}:${observation.terrain}`)) continue;
+      cells.push({
+        row: observation.row,
+        column: observation.column,
+        terrain: observation.terrain,
+        confidence: observation.confidence,
+        basis: "human-reading",
+      });
+    }
+    if (!survey && !cells.length) {
+      showToast("No new structured evidence is waiting for the agent.");
+      return;
+    }
+    const inferenceCandidates = center
+      ? [
+          { row: center.row + 1, column: center.column + 1 },
+          { row: center.row - 1, column: center.column + 1 },
+          { row: center.row + 1, column: center.column - 1 },
+        ]
+      : [];
+    const inferred = survey && inferenceCandidates.find(
       (cell) => cell.row >= 1 && cell.row <= GRID_SIZE && cell.column >= 1 && cell.column <= GRID_SIZE && !exactKeys.has(`${cell.row}:${cell.column}`),
     );
     if (inferred) {
@@ -459,7 +558,9 @@ async function runPreviewTurn() {
     }
     await toolHandlers.propose_chart_patch({
       cells,
-      rationale: "Exact cross-transect readings are high confidence. One diagonal interpolation is deliberately marked uncertain for human review.",
+      rationale: survey
+        ? "Exact cross-transect readings are high confidence. Prior human field readings are carried forward, while one diagonal interpolation remains deliberately uncertain."
+        : "The survey budget is spent. This final patch carries the human's structured field reading back into the shared chart.",
     });
     if (inferred) {
       await toolHandlers.focus_human_attention({
@@ -468,7 +569,7 @@ async function runPreviewTurn() {
         options: ["water", "meadow", "forest", "ridge"],
       });
     }
-    showToast("Agent spent one transect and staged an auditable patch.");
+    showToast(survey ? "Agent read shared state, spent one transect, and staged an auditable patch." : "Agent consumed the final human reading and staged it for approval.");
   } catch (error) {
     showToast(error.message);
   }
@@ -477,6 +578,8 @@ async function runPreviewTurn() {
 function startNewExpedition() {
   const seed = elements.seedInput.value.trim() || "northstar";
   state = createGame(seed);
+  protocolEvents = [];
+  protocolSequence = 0;
   activeGridIndex = 0;
   render();
   showToast(`New expedition: ${state.seed}`);
@@ -586,6 +689,7 @@ render();
 const toolHandlers = createToolHandlers(
   () => state,
   () => render(),
+  recordToolEvent,
 );
 const toolDefinitions = buildToolDefinitions(toolHandlers);
 
