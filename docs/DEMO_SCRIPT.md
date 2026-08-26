@@ -2,19 +2,19 @@
 
 ## 0:00–0:25 — Establish the split
 
-Open the site and say: “The agent gets seven exact instruments. I get a noisy visual lens and the pencil. Neither of us can finish alone.” Show the six available site tools.
+Open the site and say: “WebMCP gives the agent six typed tools on this live page. The agent gets seven exact instruments; I get a noisy visual lens and final approval. Neither of us can finish alone.” Point to the three-step protocol card.
 
 ## 0:25–0:55 — Use a fresh island
 
-Let a judge name the seed. Ask the agent to read the expedition and survey one sector. Point out the charge pip draining and the exact evidence glyphs appearing on the shared chart.
+Let a judge name the seed. Ask the agent to read the expedition and survey one sector. Point out `get_expedition_state`, `inspect_chart`, and `survey_region` entering the live trace, the charge pip draining, and exact evidence appearing on the chart.
 
 ## 0:55–1:30 — Audit the agent
 
-The agent stages a translucent patch containing exact and inferred cells. Show its confidence meter and accept only cells at or above 80% confidence.
+The agent stages a translucent patch containing exact and inferred cells. Show the `WRITE` trace badge, its confidence meter, and the fact that the patch is still waiting for human approval. Accept only cells at or above 80% confidence.
 
 ## 1:30–2:00 — Reverse the handoff
 
-The agent asks what the human-only field lens suggests at an uncertain coordinate. Answer with one terrain button. Ask the agent to call `inspect_chart` and incorporate the structured observation.
+The agent asks what the human-facing field lens suggests at an uncertain coordinate. Answer with one terrain button, then run the next turn. Show `inspect_chart` consuming the structured observation and carrying it into the revised proposal.
 
 ## 2:00–2:30 — Spend scarce verification
 

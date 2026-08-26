@@ -20,6 +20,12 @@ Seven Transects registers six site tools with `document.modelContext.registerToo
 - All mutating operations freeze after the expedition finishes.
 - Seven exact transects alone cannot meet the coverage target.
 
+## Visible protocol trace
+
+All six handlers pass through one invocation boundary. After a successful mutation has rendered, that boundary emits an allowlisted trace event containing the tool name, read/write class, compact input, status, and a short result summary. Failures are traced and rethrown. The observer is isolated so a broken trace renderer cannot turn a successful tool call into a failed operation.
+
+Trace summaries never serialize the full tool result or game state. In particular, they never include the truth array or seed.
+
 ## Fallback
 
-When WebMCP is unavailable, the app remains playable and provides **Simulate next agent move**. The fallback calls the same tool handlers used by a compatible browser agent.
+When WebMCP is unavailable, the app remains playable and provides **Run the WebMCP demo**. This local trace replay calls the same handlers used by a compatible browser agent. It demonstrates the contract and page mutations, but does not claim to replace native tool discovery or an external agent's reasoning.

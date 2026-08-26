@@ -4,6 +4,20 @@ Seven Transects is an agent-native cooperative cartography puzzle for the 2026 W
 
 The MVP is a static Vite app with no backend, account, model API key, or paid service.
 
+## WebMCP in 30 seconds
+
+When the page opens, it registers six tools through `document.modelContext.registerTool`. A compatible browser agent discovers those capabilities and calls them against the page's live expedition state—it does not guess coordinates by clicking pixels or scrape the chart for hidden data.
+
+The collaboration loop is visible end to end:
+
+1. The agent reads bounded state and spends a scarce structured survey.
+2. The exact result immediately appears on the same chart the person is viewing.
+3. The agent stages a confidence-coded patch but cannot commit it.
+4. The person accepts, rejects, or supplies a structured field reading.
+5. The agent calls `inspect_chart` to consume that answer and revises its next proposal.
+
+The in-app **WebMCP call trace** shows each read/write invocation, compact input, typed result, and consent boundary. The local demo drives the exact same handlers as native WebMCP so the protocol remains inspectable in an ordinary browser; it does not replace external agent discovery or reasoning.
+
 ## Why WebMCP is load-bearing
 
 Most agent-enabled games expose ordinary moves. Seven Transects uses the tool contract to define information asymmetry:
@@ -16,7 +30,7 @@ Most agent-enabled games expose ordinary moves. Seven Transects uses the tool co
 - `focus_human_attention` asks a structured question about the human's noisy visual clue; `inspect_chart` returns the answer to the agent.
 - `consult_compass` spends one of only two checks and returns a broad confidence band, preventing score-oracle probing.
 
-Removing WebMCP removes the surveyor role and the central collaboration mechanic.
+Removing WebMCP removes external agent discovery, structured evidence exchange, and the live agent-human handoff—the central collaboration mechanic.
 
 ## Site tools
 
@@ -40,7 +54,7 @@ npm install
 npm run dev
 ```
 
-Open the printed local URL. Without a WebMCP-capable browser, the full human UI and **Simulate next agent move** fallback still work.
+Open the printed local URL. Without a WebMCP-capable browser, the full human UI and **Run the WebMCP demo** trace replay still work.
 
 ## Test
 
@@ -50,7 +64,7 @@ npm run build
 npm run preview
 ```
 
-The pure game-engine suite covers deterministic generation, survey bounds and budgets, staged consent, proposal conflicts, the human-answer handoff, consultation privacy, state freezing, and payload leak guards.
+The suites cover deterministic generation, survey bounds and budgets, staged consent, proposal conflicts, the human-answer handoff, consultation privacy, state freezing, payload leak guards, all six handler traces, read/write classification, error visibility, observer isolation, and native registration.
 
 ### Test native WebMCP
 

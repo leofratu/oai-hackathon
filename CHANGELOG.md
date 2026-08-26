@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 — 2026-08-26
+
+- Moved the WebMCP value proposition above the fold with a discover/call/handoff explainer.
+- Added a live, allowlisted read/write trace for every registered tool invocation.
+- Expanded the demo into a state-reading loop that consumes human observations via `inspect_chart`.
+- Clarified the difference between native WebMCP and the same-handler local trace replay.
+- Added five protocol tests covering all handlers, failures, observer isolation, safe summaries, and registration.
+
 ## 0.2.0 — 2026-08-26
 
 - Added the human-only noisy field lens and structured observation handoff.
