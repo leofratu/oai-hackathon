@@ -1,6 +1,6 @@
 # Seven Transects
 
-Seven Transects is an agent-native cooperative cartography puzzle for the 2026 WebMCP Challenge. The browser agent receives seven exact but sparse surveys; the human receives a noisy visual field lens and final authority. Neither side can efficiently map the hidden island alone.
+Seven Transects is a rescue-mapping operation for the 2026 WebMCP Challenge. A fleet is approaching an uncharted island with only seven signal windows left. The browser agent is the remote surveyor: it receives exact but sparse scans. Mission control (the human) sees a noisy wide-field layer and owns the landing chart. Neither side can clear the landing window alone.
 
 The MVP is a static Vite app with no backend, account, model API key, or paid service.
 
@@ -100,10 +100,10 @@ The repository's `public/_headers` file is copied into the build and explicitly 
 
 ## Demo arc (under three minutes)
 
-1. Let a judge name a fresh island seed, then show the six site tools.
+1. Let a judge name a fresh operation callsign, then show the six site tools.
 2. Ask the agent to spend one survey; watch a charge pip drain and exact evidence appear.
 3. Agent stages a confidence-coded patch with one deliberately uncertain interpolation.
-4. Accept only the ≥80% cells. Answer the agent's pinned field-lens question yourself.
+4. Accept only the ≥80% cells. Answer the remote surveyor's pinned spectral-layer question yourself.
 5. The agent calls `inspect_chart`, incorporates the human answer, and continues on a different sector.
 6. Spend one scarce compass consultation near the target.
 7. Finish and reveal the cinematic Survey Seal, exact score, mistakes, and handoff count.

@@ -2,7 +2,7 @@
 
 ## 0:00–0:25 — Establish the split
 
-Open the site and say: “WebMCP gives the agent six typed tools on this live page. The agent gets seven exact instruments; I get a noisy visual lens and final approval. Neither of us can finish alone.” Point to the three-step protocol card.
+Open the site and say: “A rescue fleet is approaching an uncharted island. WebMCP gives ChatGPT six typed tools on this live page: it is the remote surveyor, while I am mission control. It gets seven exact scans; I get a noisy wide-field layer and final approval.” Point to the two role cards and mission link.
 
 ## 0:25–0:55 — Use a fresh island
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 — 2026-08-27
+
+- Reframed the puzzle as a rescue-mapping operation with seven signal windows and a fleet-ready landing chart.
+- Reworked the interface into a dark mission-control deck with role cards, signal readouts, live-state pulse, and scanline chart treatment.
+- Added a guided dispatch interaction that scrolls mission control into view after the first agent turn.
+- Tightened mission copy across the human UI, game activity, tool descriptions, prompt, and demo script.
+
 ## 0.3.0 — 2026-08-26
 
 - Moved the WebMCP value proposition above the fold with a discover/call/handoff explainer.
