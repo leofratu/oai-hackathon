@@ -1649,6 +1649,85 @@ footer {
   }
 }
 
+.tool-manifest {
+  margin: 17px 0 16px;
+  padding: 11px 12px 12px;
+  background: rgb(105 216 209 / 5%);
+  border: 1px solid var(--deck-line);
+  border-radius: 2px;
+}
+
+.tool-manifest-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+  color: var(--bone-muted);
+  font-size: 0.55rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tool-manifest-heading code {
+  color: var(--acid);
+  font-size: 0.56rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.tool-manifest-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px 12px;
+}
+
+.tool-manifest-list code {
+  min-width: 0;
+  color: var(--cyan);
+  font-size: 0.57rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.runtime-proof {
+  margin: 0 0 16px;
+  padding-left: 11px;
+  color: var(--bone-muted);
+  border-left: 2px solid var(--line-dark);
+  font-size: 0.62rem;
+  line-height: 1.45;
+}
+
+.runtime-proof[data-state="ready"] {
+  color: var(--lime);
+  border-left-color: var(--acid);
+}
+
+.runtime-proof[data-state="fallback"],
+.runtime-proof[data-state="error"] {
+  color: #ffc2b4;
+  border-left-color: var(--signal);
+}
+
+@media (max-width: 1120px) {
+  .tool-manifest,
+  .runtime-proof {
+    grid-column: 1;
+  }
+
+  .protocol-flow {
+    grid-row: 1 / span 6;
+  }
+}
+
+@media (max-width: 760px) {
+  .tool-manifest-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 440px) {
   .brand strong {
     font-size: 1.15rem;

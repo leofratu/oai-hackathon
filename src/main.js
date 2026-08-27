@@ -62,6 +62,8 @@ const elements = {
   toast: document.querySelector("#toast"),
   traceCount: document.querySelector("#traceCount"),
   turnInstruction: document.querySelector("#turnInstruction"),
+  runtimeProof: document.querySelector("#runtimeProof"),
+  toolManifestHeading: document.querySelector("#toolManifestHeading"),
   webmcpStatus: document.querySelector("#webmcpStatus"),
 };
 
@@ -76,6 +78,19 @@ let protocolSequence = 0;
 function setSiteToolStatus({ state: statusState, message }) {
   elements.webmcpStatus.dataset.state = statusState;
   elements.webmcpStatus.querySelector("span:last-child").textContent = message;
+  elements.runtimeProof.dataset.state = statusState;
+  elements.toolManifestHeading.textContent = statusState === "ready"
+    ? "Registered by this page"
+    : statusState === "fallback"
+      ? "Declared here · replay mode"
+      : "Tool contract declared here";
+  elements.runtimeProof.textContent = statusState === "ready"
+    ? "Native WebMCP is active: an external agent can discover these six tools on this page."
+    : statusState === "fallback"
+      ? "Native WebMCP is unavailable in this browser. Open this URL in ChatGPT’s in-app browser (or Chrome with WebMCP testing enabled) to connect an external agent. The demo below is only a same-handler replay."
+      : statusState === "error"
+        ? "Native WebMCP registration failed. The local replay remains available for testing."
+        : "Checking whether this browser exposes native WebMCP…";
 }
 
 function showToast(message) {
