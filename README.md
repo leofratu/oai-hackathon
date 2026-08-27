@@ -1,6 +1,6 @@
 # Seven Transects
 
-Seven Transects is a rescue-mapping operation for the 2026 WebMCP Challenge. A fleet is approaching an uncharted island with only seven signal windows left. The browser agent is the remote surveyor: it receives exact but sparse scans. Mission control (the human) sees a noisy wide-field layer and owns the landing chart. Neither side can clear the landing window alone.
+Seven Transects is a rescue-mapping operation for the 2026 WebMCP Challenge. A fleet is approaching an uncharted island with only seven signal windows left. Your job is simple: correctly color 72 of 144 squares while staying above 88% precision. The browser agent is the remote surveyor; you are mission control. Neither side can clear the landing window alone.
 
 The MVP is a static Vite app with no backend, account, model API key, or paid service.
 
@@ -10,11 +10,11 @@ When the page opens, it registers six tools through `document.modelContext.regis
 
 The collaboration loop is visible end to end:
 
-1. The agent reads bounded state and spends a scarce structured survey.
-2. The exact result immediately appears on the same chart the person is viewing.
-3. The agent stages a confidence-coded patch but cannot commit it.
-4. The person accepts, rejects, or supplies a structured field reading.
-5. The agent calls `inspect_chart` to consume that answer and revises its next proposal.
+1. Click **Dispatch survey agent**. It spends one of seven scans and reveals a cross of exact squares.
+2. Review the gold-striped proposal. Accept strong marks, reject it, or accept the whole patch.
+3. Answer the pinned spectral-layer question, then dispatch again. Keep going until 72 squares are correct.
+
+Under the hood, the agent reads bounded state and spends a scarce structured survey; the exact result immediately appears on the same chart you are viewing. It stages a confidence-coded patch but cannot commit it. After your decision, it calls `inspect_chart` to consume your answer and revise its next proposal.
 
 The in-app **WebMCP call trace** shows each read/write invocation, compact input, typed result, and consent boundary. The local demo drives the exact same handlers as native WebMCP so the protocol remains inspectable in an ordinary browser; it does not replace external agent discovery or reasoning.
 

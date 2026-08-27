@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 — 2026-08-27
+
+- Added a plain-language three-move walkthrough for first-time players.
+- Added a dynamic “Your move” instruction card that explains dispatch, review, field reading, and completion states.
+- Made the objective concrete as 72 of 144 correctly colored squares at 88% precision.
+- Removed misleading jargon from the mission prompt and landing-chart interactions.
+
 ## 0.4.0 — 2026-08-27
 
 - Reframed the puzzle as a rescue-mapping operation with seven signal windows and a fleet-ready landing chart.
