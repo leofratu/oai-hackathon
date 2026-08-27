@@ -136,7 +136,7 @@ export function createGame(seed = "northstar") {
       {
         id: "launch",
         type: "system",
-        message: `Expedition “${normalizedSeed}” opened. The truth remains under fog.`,
+        message: `Operation “${normalizedSeed}” is live. Seven scan windows remain.`,
       },
     ],
     sequence: 0,
@@ -215,7 +215,7 @@ export function surveyRegion(state, input) {
   addActivity(
     state,
     "survey",
-    `Agent sounded sector ${columnLetter(column)}${row}. ${state.surveysRemaining} charges remain.`,
+    `Remote surveyor scanned sector ${columnLetter(column)}${row}. ${state.surveysRemaining} signal windows remain.`,
     `${TERRAINS[dominantTerrain].label} dominates the surrounding square.`,
   );
 
@@ -291,7 +291,7 @@ export function proposeChartPatch(state, input) {
   addActivity(
     state,
     "proposal",
-    `Agent staged ${cells.length} translucent chart marks.`,
+    `Remote surveyor staged ${cells.length} landing-chart marks.`,
     conflicts ? `${conflicts} conflict with committed marks.` : "No committed marks are overwritten yet.",
   );
 
@@ -301,7 +301,7 @@ export function proposeChartPatch(state, input) {
     stagedCells: cells.length,
     conflicts,
     status: "awaiting_human_review",
-    instruction: "Ask the human to inspect the translucent patch and accept or reject it in the Field notes panel.",
+    instruction: "Ask mission control to inspect the translucent patch and accept or reject it in the Operations log.",
   };
 }
 
@@ -391,7 +391,7 @@ export function focusHumanAttention(state, input) {
     : TERRAIN_NAMES;
   options.forEach(assertTerrain);
   state.focus = { id: `question-${state.humanObservations.length + 1}`, row, column, note, options, status: "pending" };
-  addActivity(state, "focus", `Agent asked for human judgment at ${columnLetter(column)}${row}.`, note);
+  addActivity(state, "focus", `Remote surveyor requested mission-control judgment at ${columnLetter(column)}${row}.`, note);
   return {
     ok: true,
     focusedCell: { row, column },
@@ -423,8 +423,8 @@ export function answerHumanFocus(state, terrain, confidence = 0.65) {
   addActivity(
     state,
     "human",
-    `Human read ${TERRAINS[terrain].label.toLowerCase()} at ${columnLetter(observation.column)}${observation.row}.`,
-    `Visual field-lens reading · ${Math.round(normalizedConfidence * 100)}% confidence.`,
+    `Mission control read ${TERRAINS[terrain].label.toLowerCase()} at ${columnLetter(observation.column)}${observation.row}.`,
+    `Spectral-layer reading · ${Math.round(normalizedConfidence * 100)}% confidence.`,
   );
   return { ok: true, observation, status: "available_to_agent_via_inspect_chart" };
 }
@@ -479,8 +479,8 @@ export function consultChart(state) {
   addActivity(
     state,
     "consult",
-    `Compass consultation: ${band.label.toLowerCase()}.`,
-    `${Math.round(score.coverage * 100)}% charted · ${state.consultationsRemaining} consultation${state.consultationsRemaining === 1 ? "" : "s"} remain.`,
+    `Safety check: ${band.label.toLowerCase()}.`,
+    `${Math.round(score.coverage * 100)}% charted · ${state.consultationsRemaining} safety check${state.consultationsRemaining === 1 ? "" : "s"} remain.`,
   );
   return { ok: true, ...state.lastConsultation };
 }
@@ -491,7 +491,7 @@ export function finishExpedition(state) {
   addActivity(
     state,
     "finish",
-    score.won ? "Survey seal earned. The fog has lifted." : "The fog lifted before the chart was ready.",
+    score.won ? "Landing clearance granted. The fleet has its chart." : "Transmission closed before the chart was safe.",
     `${Math.round(score.coverage * 100)}% charted at ${score.accuracy === null ? 0 : Math.round(score.accuracy * 100)}% precision.`,
   );
   return score;
@@ -500,13 +500,13 @@ export function finishExpedition(state) {
 export function expeditionStateForAgent(state) {
   const score = scoreDraft(state);
   return {
-    name: "Seven Transects cooperative cartography expedition",
+    name: "Seven Transects rescue cartography operation",
     grid: { rows: GRID_SIZE, columns: GRID_SIZE, coordinates: "Rows are 1-12; columns are 1-12." },
     terrainValues: TERRAIN_NAMES,
     objective: {
       coverageAtLeast: TARGET_COVERAGE,
       precisionAtLeast: TARGET_ACCURACY,
-      note: "The human controls committed marks and final submission.",
+      note: "Mission control owns committed marks and final landing-chart transmission.",
     },
     surveysRemaining: state.surveysRemaining,
     consultationsRemaining: state.consultationsRemaining,

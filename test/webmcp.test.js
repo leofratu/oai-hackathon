@@ -114,7 +114,7 @@ test("native registration exposes every definition and reports WebMCP status", a
     const connected = await registerWebMCP(definitions, (status) => statuses.push(status));
     assert.equal(connected, true);
     assert.equal(registered.length, 6);
-    assert.deepEqual(statuses, [{ state: "ready", message: "WebMCP connected · 6 tools" }]);
+    assert.deepEqual(statuses, [{ state: "ready", message: "WebMCP live · 6 tools" }]);
   } finally {
     globalThis.document = previousDocument;
   }

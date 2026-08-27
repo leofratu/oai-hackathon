@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Seven Transects is an agent-native cooperative cartography puzzle powered by WebMCP."
+      content="Seven Transects is a WebMCP rescue-mapping game where a person and browser agent must chart a safe coast together."
     />
     <meta name="theme-color" content="#102a2b" />
     <link rel="icon" href="/seven-transects-mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/styles.css" />
-    <title>Seven Transects — map what neither of you can see alone</title>
+    <title>Seven Transects — chart the coast before the signal dies</title>
   </head>
   <body>
     <div class="shell">
@@ -22,7 +22,7 @@
           </svg>
           <span>
             <strong>Seven Transects</strong>
-            <small>Cooperative cartography</small>
+            <small>Rescue cartography protocol</small>
           </span>
         </a>
         <div class="webmcp-status" id="webmcpStatus" data-state="checking">
@@ -34,71 +34,96 @@
       <main id="top">
         <section class="hero" aria-labelledby="heroTitle">
           <div class="hero-copy">
-            <div class="eyebrow">A WebMCP-native human + agent experiment</div>
-            <h1 id="heroTitle">Map what neither of you<br />can see alone.</h1>
+            <div class="eyebrow"><span class="live-pulse" aria-hidden="true"></span> Operation Northstar / signal live</div>
+            <h1 id="heroTitle">Chart the coast before the signal dies.</h1>
             <p>
-              WebMCP turns this live page into six typed tools. Your agent spends scarce
-              surveys and stages evidence; you read the noisy field map and decide what
-              becomes real. Neither participant gets the whole answer.
+              A rescue fleet is approaching an uncharted island. ChatGPT controls seven
+              exact—but narrow—orbital scans. You can read the whole noisy field image and
+              decide what enters the landing chart. WebMCP is the live mission link between you.
             </p>
             <div class="hero-actions">
               <button class="button button-primary" id="demoTurnButton" type="button">
-                Run the WebMCP demo
+                Dispatch survey agent <span aria-hidden="true">↗</span>
               </button>
               <button class="button button-quiet" id="copyPromptButton" type="button">
-                Copy prompt for ChatGPT
+                Copy mission prompt
               </button>
             </div>
-            <p class="hero-demo-note">The demo uses the exact same handlers as a native browser agent.</p>
+            <p class="hero-demo-note">No model key needed. The demo runs the same handlers as a native WebMCP agent.</p>
             <p class="prompt-feedback" id="promptFeedback" role="status" aria-live="polite"></p>
+            <dl class="mission-readouts" aria-label="Mission constraints">
+              <div><dt>Scan windows</dt><dd>07</dd></div>
+              <div><dt>Chart required</dt><dd>50%</dd></div>
+              <div><dt>Safe precision</dt><dd>88%</dd></div>
+            </dl>
           </div>
 
           <aside class="protocol-primer" aria-labelledby="protocolPrimerTitle">
             <div class="protocol-primer-status">
-              <span>WebMCP / live page contract</span>
-              <span>6 typed tools</span>
+              <span>Mission link / WebMCP</span>
+              <span>Link armed</span>
             </div>
-            <h2 id="protocolPrimerTitle">The agent doesn’t click through the fog. The page gives it a contract.</h2>
+            <h2 id="protocolPrimerTitle">One live chart.<br />Two incomplete views.</h2>
+            <p class="protocol-primer-lede">The page exposes six bounded capabilities. The agent gets evidence—not DOM guesswork—and every proposed change lands in front of you.</p>
             <ol class="protocol-flow">
               <li>
                 <span>01</span>
-                <div><strong>Discover</strong><code>document.modelContext.registerTool(…)</code></div>
+                <div><strong>Agent scans</strong><p>Calls <code>survey_region</code> for an exact cross-section.</p></div>
               </li>
               <li>
                 <span>02</span>
-                <div><strong>Call</strong><code>survey_region({ row: 6, column: 6 })</code></div>
+                <div><strong>WebMCP carries evidence</strong><p>Typed results alter this same visible mission state.</p></div>
               </li>
               <li>
                 <span>03</span>
-                <div><strong>Handoff</strong><p>A proposal appears on this same chart. Only you can commit it.</p></div>
+                <div><strong>You authorize</strong><p>Approve the landing chart, reject it, or send a field reading back.</p></div>
               </li>
             </ol>
             <div class="protocol-dependency">
-              <strong>Remove WebMCP</strong>
-              <span>The agent loses its surveys, structured answers, and consent path—the collaboration stops.</span>
+              <strong>Without the link</strong>
+              <span>No agent scans, no structured handoff, no rescue chart.</span>
             </div>
           </aside>
         </section>
 
-        <section class="expedition" aria-label="Seven Transects expedition workspace">
+        <section class="role-band" aria-label="Human and agent roles">
+          <article class="role-card role-agent">
+            <span>Remote surveyor / agent</span>
+            <strong>Exact slices. No authority.</strong>
+            <p>Finds typed tools, spends scarce scans, reasons over evidence, and stages reversible patches.</p>
+          </article>
+          <div class="mission-link" aria-label="Current collaboration status">
+            <span class="mission-link-line" aria-hidden="true"></span>
+            <small>WebMCP live state</small>
+            <strong id="missionPhase">Awaiting dispatch</strong>
+            <span class="mission-link-line" aria-hidden="true"></span>
+          </div>
+          <article class="role-card role-human">
+            <span>Mission control / you</span>
+            <strong>Whole field. Final authority.</strong>
+            <p>Interprets the noisy spectral layer, answers uncertainty, and controls every committed cell.</p>
+          </article>
+        </section>
+
+        <section class="expedition" id="missionDeck" aria-label="Seven Transects rescue mapping workspace">
           <aside class="panel mission-panel">
             <div class="panel-heading">
-              <span class="panel-kicker">Expedition 01</span>
-              <h2>Field brief</h2>
+              <span class="panel-kicker">Mission control</span>
+              <h2>Landing brief</h2>
             </div>
 
             <dl class="mission-stats">
               <div>
-                <dt>Survey charges</dt>
+                <dt>Signal windows</dt>
                 <dd><strong id="surveyCount">7</strong><span>/ 7</span></dd>
               </div>
               <div class="charge-pips" id="chargePips" aria-label="Seven survey charges"></div>
               <div>
-                <dt>Charted</dt>
+                <dt>Coast charted</dt>
                 <dd><strong id="coverageValue">0</strong><span>%</span></dd>
               </div>
               <div>
-                <dt>Compass</dt>
+                <dt>Safety reading</dt>
                 <dd class="compass-reading"><strong id="accuracyValue">Unverified</strong><span id="accuracyUnit"></span></dd>
               </div>
             </dl>
@@ -106,13 +131,13 @@
             <div class="objective">
               <span class="objective-number">01</span>
               <div>
-                <strong>Earn a survey seal</strong>
-                <p>Chart at least 50% with 88% precision. Exact surveys alone cannot win.</p>
+                <strong>Clear the landing window</strong>
+                <p>The fleet needs 50% coverage at 88% precision. Agent scans alone cannot reach it.</p>
               </div>
             </div>
 
             <div class="palette-wrap">
-              <span class="control-label">Your pencil</span>
+              <span class="control-label">Mission-control pencil</span>
               <div class="palette" id="palette" role="group" aria-label="Terrain pencil">
                 <button class="swatch is-selected" data-terrain="water" aria-pressed="true" type="button">
                   <span class="terrain-chip terrain-water"></span>Water <kbd>1</kbd>
@@ -131,7 +156,7 @@
             </div>
 
             <div class="seed-control">
-              <label for="seedInput">Chart seed</label>
+              <label for="seedInput">Operation callsign</label>
               <div>
                 <input id="seedInput" maxlength="32" value="northstar" autocomplete="off" />
                 <button id="newExpeditionButton" type="button">New</button>
@@ -142,18 +167,18 @@
           <section class="map-panel" aria-labelledby="chartTitle">
             <div class="map-toolbar">
               <div>
-                <span class="panel-kicker">Shared artifact</span>
-                <h2 id="chartTitle">The unfinished chart</h2>
+                <span class="panel-kicker">Live shared artifact</span>
+                <h2 id="chartTitle">Extraction chart</h2>
               </div>
               <div class="map-actions">
-                <button id="scoreButton" class="button button-small" type="button">Consult compass <span id="consultCount">2</span></button>
-                <button id="revealButton" class="button button-small button-dark" type="button">Finish expedition</button>
+                <button id="scoreButton" class="button button-small" type="button">Run safety check <span id="consultCount">2</span></button>
+                <button id="revealButton" class="button button-small button-dark" type="button">Transmit chart</button>
               </div>
             </div>
 
             <div class="field-lens-callout">
               <span class="lens-icon" aria-hidden="true"></span>
-              <p><strong>Your field lens is noisy.</strong> Soft color beneath the fog is a human-facing visual clue—not part of any tool result. Survey glyphs are exact.</p>
+              <p><strong>Spectral layer / human channel.</strong> Soft color is your noisy wide-field reading and is absent from tool results. Dark glyphs are exact agent scans.</p>
             </div>
 
             <div class="focus-banner" id="focusBanner" hidden></div>
@@ -179,8 +204,8 @@
           <aside class="panel notes-panel" aria-labelledby="fieldNotesTitle">
             <div class="panel-heading notes-heading">
               <div>
-                <span class="panel-kicker">Same page, shared state</span>
-                <h2 id="fieldNotesTitle">Agent ↔ human</h2>
+                <span class="panel-kicker">Live mission channel</span>
+                <h2 id="fieldNotesTitle">Operations log</h2>
               </div>
               <span class="pending-count" id="pendingCount">0 pending</span>
             </div>
@@ -202,13 +227,12 @@
 
         <section class="tool-deck" aria-labelledby="toolDeckTitle">
           <div class="tool-deck-copy">
-            <span class="eyebrow">Why this needs WebMCP</span>
-            <h2 id="toolDeckTitle">A protocol, not pixel automation.</h2>
+            <span class="eyebrow">The rescue protocol</span>
+            <h2 id="toolDeckTitle">The page is the mission system.</h2>
             <p>
-              A click-driving agent would have to guess at pixels and scrape visual state.
-              Here it discovers explicit capabilities, receives typed evidence, and can only
-              make the bounded changes each tool permits. Every mutation appears in the page;
-              you keep the pencil and the final say.
+              This is not an agent clicking through a game UI. WebMCP gives it a bounded
+              instrument panel: typed scans, scarce resources, reversible proposals, and a
+              structured human channel. The protocol creates the asymmetric rescue mission.
             </p>
           </div>
           <ol class="tool-list">
@@ -223,16 +247,16 @@
       </main>
 
       <footer>
-        <span>Seven Transects / WebMCP Challenge 2026</span>
-        <span>Local-first · no accounts · no model API key</span>
+        <span>Seven Transects / Rescue Atlas 07 / WebMCP Challenge 2026</span>
+        <span>Local-first · no accounts · no model key · one shared mission state</span>
       </footer>
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <dialog class="finale" id="finaleDialog" aria-labelledby="finaleTitle">
       <div class="seal" id="finaleSeal" aria-hidden="true">VII</div>
-      <span class="eyebrow">Expedition complete</span>
-      <h2 id="finaleTitle">The fog has lifted.</h2>
+      <span class="eyebrow">Transmission complete</span>
+      <h2 id="finaleTitle">The fleet has its chart.</h2>
       <p id="finaleVerdict"></p>
       <div class="finale-score">
         <div><strong id="finalCoverage">0%</strong><span>charted</span></div>
@@ -241,8 +265,8 @@
       </div>
       <p class="finale-seed" id="finaleSeed"></p>
       <div class="finale-actions">
-        <button class="button" id="closeFinaleButton" type="button">Inspect the revealed chart</button>
-        <button class="button button-dark" id="newFromFinaleButton" type="button">Chart another island</button>
+        <button class="button" id="closeFinaleButton" type="button">Inspect the landing chart</button>
+        <button class="button button-dark" id="newFromFinaleButton" type="button">Open another operation</button>
       </div>
     </dialog>
     <script type="module" src="/src/main.js"></script>

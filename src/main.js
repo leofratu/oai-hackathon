@@ -44,6 +44,8 @@ const elements = {
   finalTeamwork: document.querySelector("#finalTeamwork"),
   finaleSeed: document.querySelector("#finaleSeed"),
   focusBanner: document.querySelector("#focusBanner"),
+  missionDeck: document.querySelector("#missionDeck"),
+  missionPhase: document.querySelector("#missionPhase"),
   newExpeditionButton: document.querySelector("#newExpeditionButton"),
   newFromFinaleButton: document.querySelector("#newFromFinaleButton"),
   closeFinaleButton: document.querySelector("#closeFinaleButton"),
@@ -450,6 +452,17 @@ function renderStats() {
     return !mark || mark.terrain !== observation.terrain;
   });
   elements.demoTurnButton.disabled = state.revealed || (state.surveysRemaining === 0 && !hasUncommittedReading);
+  elements.missionPhase.textContent = state.revealed
+    ? "Chart transmitted"
+    : state.focus
+      ? "Human reading required"
+      : state.proposals.some((proposal) => proposal.status === "pending")
+        ? "Authorization required"
+        : state.surveysRemaining === SURVEY_LIMIT
+          ? "Awaiting dispatch"
+          : state.surveysRemaining === 0
+            ? "Final evidence ready"
+            : "Ready for next scan";
 }
 
 function render() {
@@ -477,10 +490,10 @@ function paintFromElement(target) {
 }
 
 async function copyAgentPrompt() {
-  const prompt = `Help me chart this Seven Transects island. First call get_expedition_state. Each survey returns a fixed cross and spends one of seven charges. Cite exact cells as basis "exact" and mark interpolations as "inferred" with honest confidence. Exact evidence alone cannot reach 50% coverage, so use focus_human_attention to ask what my noisy field lens suggests; then call inspect_chart to read my answer. Stage small auditable patches, wait for my decision, and use the two consult_compass checks sparingly. Aim for 50% coverage and 88% precision.`;
+  const prompt = `Join my Seven Transects rescue operation as the remote surveyor. First call get_expedition_state. The fleet needs a landing chart with 50% coverage and 88% precision before seven scan windows are spent. Each survey returns one exact cross-section. Cite exact cells as basis "exact" and mark interpolations as "inferred" with honest confidence. Use focus_human_attention when you need my noisy spectral reading, then call inspect_chart to consume my answer. Stage small auditable patches, never assume approval, and use the two safety checks sparingly.`;
   try {
     await navigator.clipboard.writeText(prompt);
-    elements.promptFeedback.textContent = "Prompt copied. Paste it into your browser agent beside this page.";
+    elements.promptFeedback.textContent = "Mission prompt copied. Paste it into ChatGPT beside this live page.";
   } catch {
     elements.promptFeedback.textContent = prompt;
   }
@@ -569,7 +582,13 @@ async function runPreviewTurn() {
         options: ["water", "meadow", "forest", "ridge"],
       });
     }
-    showToast(survey ? "Agent read shared state, spent one transect, and staged an auditable patch." : "Agent consumed the final human reading and staged it for approval.");
+    showToast(survey ? "Remote surveyor spent one signal window and staged a landing patch." : "Remote surveyor consumed the final human reading and staged it for approval.");
+    requestAnimationFrame(() => {
+      elements.missionDeck.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "start",
+      });
+    });
   } catch (error) {
     showToast(error.message);
   }
@@ -582,7 +601,7 @@ function startNewExpedition() {
   protocolSequence = 0;
   activeGridIndex = 0;
   render();
-  showToast(`New expedition: ${state.seed}`);
+  showToast(`Operation ${state.seed.toUpperCase()} is live.`);
 }
 
 function checkScore() {
@@ -606,12 +625,12 @@ function revealTruth() {
   elements.finaleDialog.classList.toggle("is-won", score.won);
   elements.finaleSeal.textContent = score.won ? "VII" : "×";
   elements.finaleVerdict.textContent = score.won
-    ? "Your sparse evidence and human field readings formed a seal-worthy chart."
-    : "The chart is now revealed. Coral outlines show where confidence outran evidence.";
+    ? "Landing clearance granted. Agent scans and mission-control judgment formed a fleet-ready chart."
+    : "Landing clearance denied. Coral outlines show where confidence outran evidence.";
   elements.finalCoverage.textContent = `${formatPercent(score.coverage)}%`;
   elements.finalPrecision.textContent = `${formatPercent(score.accuracy || 0)}%`;
   elements.finalTeamwork.textContent = String(state.humanObservations.length + state.proposals.filter((item) => item.status !== "pending").length);
-  elements.finaleSeed.textContent = `FIELD RECORD · ${state.seed.toUpperCase()}`;
+  elements.finaleSeed.textContent = `OPERATION RECORD · ${state.seed.toUpperCase()}`;
   elements.finaleDialog.showModal();
 }
 

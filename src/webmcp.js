@@ -95,9 +95,9 @@ export function buildToolDefinitions(handlers) {
     },
     {
       name: "survey_region",
-      title: "Spend a survey charge",
+      title: "Spend a scan window",
       description:
-        "Spend one limited survey charge at a grid coordinate. Returns exact horizontal and vertical terrain transects plus an aggregate histogram for the surrounding square. This visibly pins a survey to the shared chart.",
+        "Spend one limited signal window at a grid coordinate. Returns exact horizontal and vertical terrain transects plus an aggregate histogram for the surrounding square. This visibly pins a scan to the shared landing chart.",
       inputSchema: {
         type: "object",
         properties: {
@@ -123,7 +123,7 @@ export function buildToolDefinitions(handlers) {
       name: "propose_chart_patch",
       title: "Stage chart marks",
       description:
-        "Stage up to 32 translucent terrain marks with confidence and a short rationale. This does not commit any mark. The human must accept or reject the proposal in the visible Field notes panel.",
+        "Stage up to 32 translucent terrain marks with confidence and a short rationale. This does not commit any mark. Mission control must accept or reject the proposal in the visible Operations log.",
       inputSchema: {
         type: "object",
         properties: {
@@ -179,7 +179,7 @@ export function buildToolDefinitions(handlers) {
     },
     {
       name: "consult_compass",
-      title: "Consult the precision compass",
+      title: "Run a safety check",
       description:
         "Spend one of two consultations to receive chart coverage and a broad precision band. It never reveals exact correctness or individual mistakes.",
       inputSchema: emptySchema,
@@ -192,13 +192,13 @@ export function buildToolDefinitions(handlers) {
 export async function registerWebMCP(definitions, onStatus) {
   const modelContext = document.modelContext ?? navigator.modelContext ?? globalThis.modelContext;
   if (typeof modelContext?.registerTool !== "function") {
-    onStatus({ state: "fallback", message: "WebMCP unavailable · simulator active" });
+    onStatus({ state: "fallback", message: "Simulator active · WebMCP off" });
     return false;
   }
 
   try {
     await Promise.all(definitions.map((definition) => modelContext.registerTool(definition)));
-    onStatus({ state: "ready", message: `WebMCP connected · ${definitions.length} tools` });
+    onStatus({ state: "ready", message: `WebMCP live · ${definitions.length} tools` });
     return true;
   } catch (error) {
     console.error("Seven Transects could not register WebMCP tools", error);
