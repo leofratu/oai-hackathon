@@ -37,9 +37,9 @@
             <div class="eyebrow"><span class="live-pulse" aria-hidden="true"></span> Operation Northstar / signal live</div>
             <h1 id="heroTitle">Chart the coast before the signal dies.</h1>
             <p>
-              A rescue fleet is approaching an uncharted island. ChatGPT controls seven
-              exact—but narrow—orbital scans. You can read the whole noisy field image and
-              decide what enters the landing chart. WebMCP is the live mission link between you.
+              Your job is to correctly color 72 of the island’s 144 squares. ChatGPT has seven
+              exact—but narrow—scans. You have the noisy whole-island view and the final say.
+              WebMCP is the live mission link between you.
             </p>
             <div class="hero-actions">
               <button class="button button-primary" id="demoTurnButton" type="button">
@@ -105,6 +105,30 @@
           </article>
         </section>
 
+        <section class="how-to" aria-labelledby="howToTitle">
+          <div class="how-to-heading">
+            <div>
+              <span class="eyebrow">New to the mission?</span>
+              <h2 id="howToTitle">Three moves. That’s the whole game.</h2>
+            </div>
+            <span class="how-to-count">01 → 02 → 03</span>
+          </div>
+          <div class="how-to-steps">
+            <article class="how-to-step">
+              <span>01</span>
+              <div><strong>Dispatch the agent</strong><p>Click the green button. ChatGPT spends one scan and reveals a cross of exact squares.</p></div>
+            </article>
+            <article class="how-to-step">
+              <span>02</span>
+              <div><strong>Review the patch</strong><p>Gold-striped squares are suggestions. Accept the good ones or reject the whole patch.</p></div>
+            </article>
+            <article class="how-to-step">
+              <span>03</span>
+              <div><strong>Use your eyes</strong><p>Answer the pinned question, then dispatch again. Fill gaps until the chart reaches 72 correct squares.</p></div>
+            </article>
+          </div>
+        </section>
+
         <section class="expedition" id="missionDeck" aria-label="Seven Transects rescue mapping workspace">
           <aside class="panel mission-panel">
             <div class="panel-heading">
@@ -132,7 +156,7 @@
               <span class="objective-number">01</span>
               <div>
                 <strong>Clear the landing window</strong>
-                <p>The fleet needs 50% coverage at 88% precision. Agent scans alone cannot reach it.</p>
+                <p>Color 72/144 squares correctly. Stay above 88% precision. Agent scans alone cannot finish.</p>
               </div>
             </div>
 
@@ -179,6 +203,12 @@
             <div class="field-lens-callout">
               <span class="lens-icon" aria-hidden="true"></span>
               <p><strong>Spectral layer / human channel.</strong> Soft color is your noisy wide-field reading and is absent from tool results. Dark glyphs are exact agent scans.</p>
+            </div>
+
+            <div class="turn-instruction" id="turnInstruction" aria-live="polite">
+              <span class="turn-instruction-label">Your move</span>
+              <strong>01 · Dispatch the survey agent</strong>
+              <p>Click the green button above. The agent will spend one scan and place exact evidence on this chart.</p>
             </div>
 
             <div class="focus-banner" id="focusBanner" hidden></div>

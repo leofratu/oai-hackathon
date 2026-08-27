@@ -61,6 +61,7 @@ const elements = {
   surveyCount: document.querySelector("#surveyCount"),
   toast: document.querySelector("#toast"),
   traceCount: document.querySelector("#traceCount"),
+  turnInstruction: document.querySelector("#turnInstruction"),
   webmcpStatus: document.querySelector("#webmcpStatus"),
 };
 
@@ -463,6 +464,46 @@ function renderStats() {
           : state.surveysRemaining === 0
             ? "Final evidence ready"
             : "Ready for next scan";
+
+  renderTurnInstruction();
+}
+
+function renderTurnInstruction() {
+  const title = elements.turnInstruction.querySelector("strong");
+  const detail = elements.turnInstruction.querySelector("p");
+  if (state.revealed) {
+    title.textContent = "Mission complete";
+    detail.textContent = "The chart is revealed below. Start a new operation to try another island.";
+    elements.turnInstruction.dataset.state = "complete";
+    return;
+  }
+  if (state.focus) {
+    title.textContent = "03 · Answer the pinned question";
+    detail.textContent = "Choose the terrain your spectral layer suggests. Your answer goes back to the agent through inspect_chart.";
+    elements.turnInstruction.dataset.state = "human";
+    return;
+  }
+  if (state.proposals.some((proposal) => proposal.status === "pending")) {
+    title.textContent = "02 · Review the gold-striped patch";
+    detail.textContent = "Accept ≥80% to keep only strong marks, accept the full patch, or reject it and ask the agent to try again.";
+    elements.turnInstruction.dataset.state = "review";
+    return;
+  }
+  if (state.surveysRemaining === SURVEY_LIMIT) {
+    title.textContent = "01 · Dispatch the survey agent";
+    detail.textContent = "Click the green button above. The agent spends one scan and places exact evidence on this chart.";
+    elements.turnInstruction.dataset.state = "dispatch";
+    return;
+  }
+  if (state.surveysRemaining === 0) {
+    title.textContent = "Finish the landing chart";
+    detail.textContent = "Review any final evidence, color remaining gaps with your pencil, then transmit the chart.";
+    elements.turnInstruction.dataset.state = "finish";
+    return;
+  }
+  title.textContent = "01 · Dispatch the next scan";
+  detail.textContent = "You can send the agent again after resolving the current handoff.";
+  elements.turnInstruction.dataset.state = "dispatch";
 }
 
 function render() {
