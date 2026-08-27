@@ -1643,6 +1643,12 @@ footer {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .live-pulse {
+    animation: none;
+  }
+}
+
 @media (max-width: 440px) {
   .brand strong {
     font-size: 1.15rem;
@@ -1660,6 +1666,182 @@ footer {
 
   .finale {
     padding: 32px 20px;
+  }
+}
+
+/* Clarity layer: teach the loop before exposing the controls */
+
+.how-to {
+  margin: 0 0 24px;
+  padding: 25px 28px 23px;
+  background: rgb(12 28 34 / 86%);
+  border: 1px solid var(--deck-line);
+  border-left: 3px solid var(--acid);
+  border-radius: 2px;
+}
+
+.how-to-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.how-to-heading .eyebrow {
+  margin-bottom: 7px;
+}
+
+.how-to-heading h2 {
+  margin: 0;
+  color: var(--bone);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.55rem, 2.5vw, 2.35rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.how-to-count {
+  flex: 0 0 auto;
+  color: var(--acid);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.how-to-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+
+.how-to-step {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 11px;
+  padding: 0 22px;
+}
+
+.how-to-step:first-child {
+  padding-left: 0;
+}
+
+.how-to-step:last-child {
+  padding-right: 0;
+}
+
+.how-to-step + .how-to-step {
+  border-left: 1px solid var(--deck-line);
+}
+
+.how-to-step > span {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: var(--night);
+  background: var(--acid);
+  border-radius: 50%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.6rem;
+  font-weight: 900;
+}
+
+.how-to-step strong {
+  display: block;
+  color: var(--bone);
+  font-size: 0.77rem;
+}
+
+.how-to-step p {
+  margin: 5px 0 0;
+  color: var(--bone-muted);
+  font-size: 0.66rem;
+  line-height: 1.55;
+}
+
+.turn-instruction {
+  width: min(100%, 650px);
+  margin: 0 auto 15px;
+  padding: 13px 15px 14px 18px;
+  background: rgb(105 216 209 / 8%);
+  border: 1px solid rgb(54 118 130 / 38%);
+  border-left: 4px solid var(--water-dark);
+  border-radius: 2px;
+}
+
+.turn-instruction[data-state="review"] {
+  background: rgb(231 174 82 / 11%);
+  border-color: rgb(231 174 82 / 45%);
+  border-left-color: var(--gold);
+}
+
+.turn-instruction[data-state="human"] {
+  background: rgb(255 117 81 / 10%);
+  border-color: rgb(255 117 81 / 45%);
+  border-left-color: var(--signal);
+}
+
+.turn-instruction[data-state="complete"] {
+  background: rgb(201 243 109 / 16%);
+  border-color: rgb(201 243 109 / 55%);
+  border-left-color: var(--acid);
+}
+
+.turn-instruction-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--water-dark);
+  font-size: 0.56rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.turn-instruction strong {
+  display: block;
+  color: var(--ink);
+  font-size: 0.78rem;
+}
+
+.turn-instruction p {
+  margin: 4px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.67rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .how-to {
+    padding: 22px;
+  }
+
+  .how-to-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .how-to-count {
+    font-size: 0.58rem;
+  }
+
+  .how-to-steps {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .how-to-step,
+  .how-to-step:first-child,
+  .how-to-step:last-child {
+    padding: 0;
+  }
+
+  .how-to-step + .how-to-step {
+    padding-top: 15px;
+    border-top: 1px solid var(--deck-line);
+    border-left: 0;
   }
 }
 
