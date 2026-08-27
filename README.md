@@ -1,24 +1,24 @@
 # Seven Transects
 
-Seven Transects is a rescue-mapping operation for the 2026 WebMCP Challenge. A fleet is approaching an uncharted island with only seven signal windows left. Your job is simple: correctly color 72 of 144 squares while staying above 88% precision. The browser agent is the remote surveyor; you are mission control. Neither side can clear the landing window alone.
+Seven Transects is a rescue-mapping game for the 2026 WebMCP Challenge. A fleet is approaching an uncharted island with seven scan windows left. Your goal is to correctly color 72 of 144 squares while staying above 88% precision. The browser agent finds exact evidence, and you decide which marks stay on the chart. The target requires both inputs.
 
 The MVP is a static Vite app with no backend, account, model API key, or paid service.
 
 ## WebMCP in 30 seconds
 
-When the page opens, it registers six tools through `document.modelContext.registerTool`. A compatible browser agent discovers those capabilities and calls them against the page's live expedition state—it does not guess coordinates by clicking pixels or scrape the chart for hidden data.
+When the page opens, it registers six tools through `document.modelContext.registerTool`. A compatible browser agent discovers those tools and calls them against the page's live game state. Tool results contain structured data with bounded side effects.
 
-The collaboration loop is visible end to end:
+The player flow is:
 
 1. Click **Dispatch survey agent**. It spends one of seven scans and reveals a cross of exact squares.
 2. Review the gold-striped proposal. Accept strong marks, reject it, or accept the whole patch.
 3. Answer the pinned spectral-layer question, then dispatch again. Keep going until 72 squares are correct.
 
-Under the hood, the agent reads bounded state and spends a scarce structured survey; the exact result immediately appears on the same chart you are viewing. It stages a confidence-coded patch but cannot commit it. After your decision, it calls `inspect_chart` to consume your answer and revise its next proposal.
+The agent first reads bounded state and spends a survey. The result appears on the shared chart. The agent can stage a confidence-coded patch, but only the person can commit it. After the decision, the agent calls `inspect_chart` to read the answer and prepare its next proposal.
 
 The in-app **WebMCP call trace** shows each read/write invocation, compact input, typed result, and consent boundary. The local demo drives the exact same handlers as native WebMCP so the protocol remains inspectable in an ordinary browser; it does not replace external agent discovery or reasoning.
 
-## Why WebMCP is load-bearing
+## Why the game requires WebMCP
 
 Most agent-enabled games expose ordinary moves. Seven Transects uses the tool contract to define information asymmetry:
 
@@ -30,7 +30,7 @@ Most agent-enabled games expose ordinary moves. Seven Transects uses the tool co
 - `focus_human_attention` asks a structured question about the human's noisy visual clue; `inspect_chart` returns the answer to the agent.
 - `consult_compass` spends one of only two checks and returns a broad confidence band, preventing score-oracle probing.
 
-Removing WebMCP removes external agent discovery, structured evidence exchange, and the live agent-human handoff—the central collaboration mechanic.
+WebMCP provides external agent discovery, structured evidence exchange, and the agent-human handoff used by the game.
 
 ## Site tools
 
@@ -72,7 +72,7 @@ In ChatGPT's built-in desktop browser, open the deployed site and inspect **Site
 
 Suggested prompt:
 
-> Help me chart this Seven Transects island. First call get_expedition_state. Each survey returns a fixed cross and spends one of seven charges. Cite exact cells as basis "exact" and mark interpolations as "inferred" with honest confidence. Exact evidence alone cannot reach 50% coverage, so use focus_human_attention to ask what my noisy field lens suggests; then call inspect_chart to read my answer. Stage small auditable patches, wait for my decision, and use the two consult_compass checks sparingly. Aim for 50% coverage and 88% precision.
+> Join my Seven Transects game as the survey agent. First call get_expedition_state. The chart needs 50% coverage and 88% precision. Each survey returns one exact cross and spends one of seven scans. Label exact cells with basis "exact" and estimates with basis "inferred". Use focus_human_attention when you need my field-layer reading, then call inspect_chart to read my answer. Stage small patches and wait for my decision before continuing.
 
 For Chrome local testing:
 
@@ -90,23 +90,23 @@ For Chrome local testing:
 4. Set output directory to `dist`.
 5. Deploy.
 
-The repository's `public/_headers` file is copied into the build and explicitly enables an origin-keyed agent cluster and the `tools` permissions policy. Cloudflare Pages' current Free plan allows 500 builds per month, 20,000 files per site, and files up to 25 MiB—far above this MVP's needs.
+The repository's `public/_headers` file is copied into the build and enables an origin-keyed agent cluster and the `tools` permissions policy. Cloudflare Pages' current Free plan allows 500 builds per month, 20,000 files per site, and files up to 25 MiB. This project is well below those limits.
 
 ### Alternatives
 
-- **Vercel Hobby:** import the repository; Vite is auto-detected. Suitable for a personal hackathon project, but Hobby is restricted to non-commercial personal use.
-- **Netlify Free:** `netlify.toml` already defines the build and security headers.
-- **GitHub Pages:** free from a public repository; configure a GitHub Actions Vite deployment if desired.
+- Vercel Hobby auto-detects Vite when you import the repository. Hobby is restricted to non-commercial personal use.
+- Netlify Free can use the existing `netlify.toml` build and security-header configuration.
+- GitHub Pages can deploy the public repository through a Vite GitHub Actions workflow.
 
 ## Demo arc (under three minutes)
 
 1. Let a judge name a fresh operation callsign, then show the six site tools.
 2. Ask the agent to spend one survey; watch a charge pip drain and exact evidence appear.
 3. Agent stages a confidence-coded patch with one deliberately uncertain interpolation.
-4. Accept only the ≥80% cells. Answer the remote surveyor's pinned spectral-layer question yourself.
+4. Accept only cells at or above 80%. Answer the survey agent's pinned field-layer question.
 5. The agent calls `inspect_chart`, incorporates the human answer, and continues on a different sector.
 6. Spend one scarce compass consultation near the target.
-7. Finish and reveal the cinematic Survey Seal, exact score, mistakes, and handoff count.
+7. Finish and show the exact score, mistakes, and handoff count.
 
 ## Project structure
 
@@ -134,4 +134,4 @@ netlify.toml           Optional Netlify deployment configuration
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

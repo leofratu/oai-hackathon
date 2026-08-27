@@ -82,15 +82,15 @@ function setSiteToolStatus({ state: statusState, message }) {
   elements.toolManifestHeading.textContent = statusState === "ready"
     ? "Registered by this page"
     : statusState === "fallback"
-      ? "Declared here · replay mode"
+      ? "Declared here / replay mode"
       : "Tool contract declared here";
   elements.runtimeProof.textContent = statusState === "ready"
     ? "Native WebMCP is active: an external agent can discover these six tools on this page."
     : statusState === "fallback"
-      ? "Native WebMCP is unavailable in this browser. Open this URL in ChatGPT’s in-app browser (or Chrome with WebMCP testing enabled) to connect an external agent. The demo below is only a same-handler replay."
+      ? "Native WebMCP is unavailable in this browser. Open this URL in ChatGPT's in-app browser (or Chrome with WebMCP testing enabled) to connect an external agent. The demo below replays the same handlers locally."
       : statusState === "error"
         ? "Native WebMCP registration failed. The local replay remains available for testing."
-        : "Checking whether this browser exposes native WebMCP…";
+        : "Checking whether this browser exposes native WebMCP...";
 }
 
 function showToast(message) {
@@ -132,7 +132,7 @@ function renderProtocolTrace() {
     call.append(toolName, input);
 
     const result = document.createElement("p");
-    result.textContent = `${event.status === "error" ? "Error" : "Result"} → ${event.summary}`;
+    result.textContent = `${event.status === "error" ? "Error" : "Result"}: ${event.summary}`;
     article.append(heading, call, result);
     fragment.append(article);
   }
@@ -264,8 +264,8 @@ function noteCard(activity) {
             : activity.type === "consult"
               ? "C"
             : activity.type === "finish"
-              ? "✓"
-              : "·";
+              ? "OK"
+              : ".";
   const copy = document.createElement("div");
   const message = document.createElement("strong");
   message.textContent = activity.message;
@@ -329,7 +329,7 @@ function proposalCard(proposal) {
     basisCounts["human-reading"] && `${basisCounts["human-reading"]} human`,
   ]
     .filter(Boolean)
-    .join(" · ");
+    .join(" / ");
   const confidenceAverage = document.createElement("strong");
   confidenceAverage.textContent = `${Math.round(averageConfidence * 100)}% avg`;
   confidence.append(confidenceBreakdown, confidenceAverage);
@@ -349,7 +349,7 @@ function proposalCard(proposal) {
   });
   const acceptCertain = document.createElement("button");
   acceptCertain.type = "button";
-  acceptCertain.textContent = "Accept ≥80%";
+  acceptCertain.textContent = "Accept 80%+";
   acceptCertain.setAttribute("aria-label", `Accept only high-confidence cells from proposal of ${proposal.cells.length} marks`);
   acceptCertain.addEventListener("click", () => {
     try {
@@ -357,7 +357,7 @@ function proposalCard(proposal) {
         minimumConfidence: 0.8,
         reason: "Accepted only high-confidence marks; uncertain cells need more evidence.",
       });
-      showToast(`High-confidence marks committed · ${formatPercent(score.coverage)}% charted`);
+      showToast(`High-confidence marks committed / ${formatPercent(score.coverage)}% charted`);
       render();
     } catch (error) {
       showToast(error.message);
@@ -375,7 +375,7 @@ function proposalCard(proposal) {
         : false;
       if (liveConflicts && !allowOverwrite) return;
       const score = acceptProposal(state, proposal.id, { allowOverwrite });
-      showToast(`${proposal.cells.length} marks committed · ${formatPercent(score.coverage)}% charted`);
+      showToast(`${proposal.cells.length} marks committed / ${formatPercent(score.coverage)}% charted`);
       render();
     } catch (error) {
       showToast(error.message);
@@ -422,7 +422,7 @@ function renderFocusBanner() {
   }
   elements.focusBanner.hidden = false;
   const coordinate = document.createElement("strong");
-  coordinate.textContent = `Human reading requested · ${columnLetter(state.focus.column)}${state.focus.row}`;
+  coordinate.textContent = `Human reading requested / ${columnLetter(state.focus.column)}${state.focus.row}`;
   const note = document.createElement("span");
   note.textContent = state.focus.note;
   elements.focusBanner.replaceChildren(coordinate, note);
@@ -454,7 +454,7 @@ function renderStats() {
     elements.chargePips.append(pip);
   }
   if (state.revealed) {
-    elements.accuracyValue.textContent = score.accuracy === null ? "—" : formatPercent(score.accuracy);
+    elements.accuracyValue.textContent = score.accuracy === null ? "--" : formatPercent(score.accuracy);
     elements.accuracyUnit.textContent = score.accuracy === null ? "" : "%";
   } else {
     elements.accuracyValue.textContent = state.lastConsultation?.band.label || "Unverified";
@@ -493,19 +493,19 @@ function renderTurnInstruction() {
     return;
   }
   if (state.focus) {
-    title.textContent = "03 · Answer the pinned question";
+    title.textContent = "03 / Answer the pinned question";
     detail.textContent = "Choose the terrain your spectral layer suggests. Your answer goes back to the agent through inspect_chart.";
     elements.turnInstruction.dataset.state = "human";
     return;
   }
   if (state.proposals.some((proposal) => proposal.status === "pending")) {
-    title.textContent = "02 · Review the gold-striped patch";
-    detail.textContent = "Accept ≥80% to keep only strong marks, accept the full patch, or reject it and ask the agent to try again.";
+    title.textContent = "02 / Review the gold-striped patch";
+    detail.textContent = "Accept 80%+ to keep only strong marks, accept the full patch, or reject it and ask the agent to try again.";
     elements.turnInstruction.dataset.state = "review";
     return;
   }
   if (state.surveysRemaining === SURVEY_LIMIT) {
-    title.textContent = "01 · Dispatch the survey agent";
+    title.textContent = "01 / Dispatch the survey agent";
     detail.textContent = "Click the green button above. The agent spends one scan and places exact evidence on this chart.";
     elements.turnInstruction.dataset.state = "dispatch";
     return;
@@ -516,7 +516,7 @@ function renderTurnInstruction() {
     elements.turnInstruction.dataset.state = "finish";
     return;
   }
-  title.textContent = "01 · Dispatch the next scan";
+  title.textContent = "01 / Dispatch the next scan";
   detail.textContent = "You can send the agent again after resolving the current handoff.";
   elements.turnInstruction.dataset.state = "dispatch";
 }
@@ -667,7 +667,7 @@ function checkScore() {
   }
   try {
     const reading = consultChart(state);
-    showToast(`${formatPercent(reading.coverage)}% charted · ${reading.band.label}`);
+    showToast(`${formatPercent(reading.coverage)}% charted / ${reading.band.label}`);
     render();
   } catch (error) {
     showToast(error.message);
@@ -679,14 +679,14 @@ function revealTruth() {
   const score = finishExpedition(state);
   render();
   elements.finaleDialog.classList.toggle("is-won", score.won);
-  elements.finaleSeal.textContent = score.won ? "VII" : "×";
+  elements.finaleSeal.textContent = score.won ? "VII" : "X";
   elements.finaleVerdict.textContent = score.won
     ? "Landing clearance granted. Agent scans and mission-control judgment formed a fleet-ready chart."
     : "Landing clearance denied. Coral outlines show where confidence outran evidence.";
   elements.finalCoverage.textContent = `${formatPercent(score.coverage)}%`;
   elements.finalPrecision.textContent = `${formatPercent(score.accuracy || 0)}%`;
   elements.finalTeamwork.textContent = String(state.humanObservations.length + state.proposals.filter((item) => item.status !== "pending").length);
-  elements.finaleSeed.textContent = `OPERATION RECORD · ${state.seed.toUpperCase()}`;
+  elements.finaleSeed.textContent = `OPERATION RECORD / ${state.seed.toUpperCase()}`;
   elements.finaleDialog.showModal();
 }
 

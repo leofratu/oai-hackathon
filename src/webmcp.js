@@ -19,17 +19,17 @@ export function summarizeToolEvent({ name, result, error }) {
 
   switch (name) {
     case "get_expedition_state":
-      return `${result.surveysRemaining} surveys · ${result.chart.marked}/${result.chart.totalCells} cells committed`;
+      return `${result.surveysRemaining} surveys / ${result.chart.marked}/${result.chart.totalCells} cells committed`;
     case "survey_region":
-      return `${result.rowTransect.length + result.columnTransect.length - 1} exact cells · ${result.surveysRemaining} charges left`;
+      return `${result.rowTransect.length + result.columnTransect.length - 1} exact cells / ${result.surveysRemaining} charges left`;
     case "inspect_chart":
-      return `${result.committedCells.length} committed · ${result.humanObservations.length} human readings`;
+      return `${result.committedCells.length} committed / ${result.humanObservations.length} human readings`;
     case "propose_chart_patch":
-      return `${result.stagedCells} cells staged · awaiting human approval`;
+      return `${result.stagedCells} cells staged / awaiting human approval`;
     case "focus_human_attention":
-      return `question pinned at row ${result.focusedCell.row}, column ${result.focusedCell.column} · awaiting human`;
+      return `question pinned at row ${result.focusedCell.row}, column ${result.focusedCell.column} / awaiting human`;
     case "consult_compass":
-      return `${result.band.label} · ${result.consultationsRemaining} checks left`;
+      return `${result.band.label} / ${result.consultationsRemaining} checks left`;
     default:
       return "Tool completed";
   }
@@ -37,8 +37,8 @@ export function summarizeToolEvent({ name, result, error }) {
 
 export function formatToolInput(name, input = {}) {
   if (name === "survey_region") return `{ row: ${input.row}, column: ${input.column} }`;
-  if (name === "propose_chart_patch") return `{ cells: ${input.cells?.length || 0}, rationale: … }`;
-  if (name === "focus_human_attention") return `{ row: ${input.row}, column: ${input.column}, note: … }`;
+  if (name === "propose_chart_patch") return `{ cells: ${input.cells?.length || 0}, rationale: ... }`;
+  if (name === "focus_human_attention") return `{ row: ${input.row}, column: ${input.column}, note: ... }`;
   return "{}";
 }
 
@@ -192,13 +192,13 @@ export function buildToolDefinitions(handlers) {
 export async function registerWebMCP(definitions, onStatus) {
   const modelContext = document.modelContext ?? navigator.modelContext ?? globalThis.modelContext;
   if (typeof modelContext?.registerTool !== "function") {
-    onStatus({ state: "fallback", message: "Simulator active · WebMCP off" });
+    onStatus({ state: "fallback", message: "Simulator active / WebMCP off" });
     return false;
   }
 
   try {
     await Promise.all(definitions.map((definition) => modelContext.registerTool(definition)));
-    onStatus({ state: "ready", message: `WebMCP live · ${definitions.length} tools` });
+    onStatus({ state: "ready", message: `WebMCP live / ${definitions.length} tools` });
     return true;
   } catch (error) {
     console.error("Seven Transects could not register WebMCP tools", error);

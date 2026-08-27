@@ -9,7 +9,7 @@ export const CONSULT_LIMIT = 2;
 
 export const TERRAINS = Object.freeze({
   water: { label: "Water", symbol: "≈" },
-  meadow: { label: "Meadow", symbol: "·" },
+  meadow: { label: "Meadow", symbol: "." },
   forest: { label: "Forest", symbol: "♠" },
   ridge: { label: "Ridge", symbol: "▲" },
 });
@@ -136,7 +136,7 @@ export function createGame(seed = "northstar") {
       {
         id: "launch",
         type: "system",
-        message: `Operation “${normalizedSeed}” is live. Seven scan windows remain.`,
+        message: `Operation "${normalizedSeed}" is live. Seven scan windows remain.`,
       },
     ],
     sequence: 0,
@@ -424,7 +424,7 @@ export function answerHumanFocus(state, terrain, confidence = 0.65) {
     state,
     "human",
     `Mission control read ${TERRAINS[terrain].label.toLowerCase()} at ${columnLetter(observation.column)}${observation.row}.`,
-    `Spectral-layer reading · ${Math.round(normalizedConfidence * 100)}% confidence.`,
+    `Spectral-layer reading / ${Math.round(normalizedConfidence * 100)}% confidence.`,
   );
   return { ok: true, observation, status: "available_to_agent_via_inspect_chart" };
 }
@@ -480,7 +480,7 @@ export function consultChart(state) {
     state,
     "consult",
     `Safety check: ${band.label.toLowerCase()}.`,
-    `${Math.round(score.coverage * 100)}% charted · ${state.consultationsRemaining} safety check${state.consultationsRemaining === 1 ? "" : "s"} remain.`,
+    `${Math.round(score.coverage * 100)}% charted / ${state.consultationsRemaining} safety check${state.consultationsRemaining === 1 ? "" : "s"} remain.`,
   );
   return { ok: true, ...state.lastConsultation };
 }

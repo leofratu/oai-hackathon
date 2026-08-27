@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#102a2b" />
     <link rel="icon" href="/seven-transects-mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/styles.css" />
-    <title>Seven Transects — chart the coast before the signal dies</title>
+    <title>Seven Transects: chart the coast before the signal dies</title>
   </head>
   <body>
     <div class="shell">
@@ -27,7 +27,7 @@
         </a>
         <div class="webmcp-status" id="webmcpStatus" data-state="checking">
           <span class="status-dot" aria-hidden="true"></span>
-          <span>Checking site tools…</span>
+          <span>Checking site tools...</span>
         </div>
       </header>
 
@@ -37,13 +37,14 @@
             <div class="eyebrow"><span class="live-pulse" aria-hidden="true"></span> Operation Northstar / signal live</div>
             <h1 id="heroTitle">Chart the coast before the signal dies.</h1>
             <p>
-              Your job is to correctly color 72 of the island’s 144 squares. ChatGPT has seven
-              exact—but narrow—scans. You have the noisy whole-island view and the final say.
+              Your job is to correctly color 72 of the island's 144 squares. ChatGPT has seven
+              exact scans, and each scan covers one narrow cross. You see the whole island through
+              a noisy field layer and decide which marks stay on the chart.
               WebMCP is the live mission link between you.
             </p>
             <div class="hero-actions">
               <button class="button button-primary" id="demoTurnButton" type="button">
-                Dispatch survey agent <span aria-hidden="true">↗</span>
+                Dispatch survey agent
               </button>
               <button class="button button-quiet" id="copyPromptButton" type="button">
                 Copy mission prompt
@@ -63,16 +64,16 @@
               <span>Mission link / WebMCP</span>
               <span>Link armed</span>
             </div>
-            <h2 id="protocolPrimerTitle">One live chart.<br />Two incomplete views.</h2>
-            <p class="protocol-primer-lede">The page exposes six bounded capabilities. The agent gets evidence—not DOM guesswork—and every proposed change lands in front of you.</p>
+            <h2 id="protocolPrimerTitle">You and the agent share one chart.</h2>
+            <p class="protocol-primer-lede">The page exposes six bounded tools. The agent receives structured evidence and sends each proposed change to you for review.</p>
             <div class="tool-manifest" aria-label="WebMCP tools registered by this page">
-              <div class="tool-manifest-heading"><span id="toolManifestHeading">Tool contract declared here</span><code>registerTool × 6</code></div>
+              <div class="tool-manifest-heading"><span id="toolManifestHeading">Tool contract declared here</span><code>6 registerTool calls</code></div>
               <div class="tool-manifest-list">
                 <code>get_expedition_state</code><code>survey_region</code><code>inspect_chart</code>
                 <code>propose_chart_patch</code><code>focus_human_attention</code><code>consult_compass</code>
               </div>
             </div>
-            <p class="runtime-proof" id="runtimeProof">Checking whether this browser exposes native WebMCP…</p>
+            <p class="runtime-proof" id="runtimeProof">Checking whether this browser exposes native WebMCP...</p>
             <ol class="protocol-flow">
               <li>
                 <span>01</span>
@@ -88,8 +89,8 @@
               </li>
             </ol>
             <div class="protocol-dependency">
-              <strong>Without the link</strong>
-              <span>No agent scans, no structured handoff, no rescue chart.</span>
+              <strong>What WebMCP controls</strong>
+              <span>Agent scans, structured questions, proposals, and chart inspection.</span>
             </div>
           </aside>
         </section>
@@ -97,7 +98,7 @@
         <section class="role-band" aria-label="Human and agent roles">
           <article class="role-card role-agent">
             <span>Remote surveyor / agent</span>
-            <strong>Exact slices. No authority.</strong>
+            <strong>The agent finds evidence and proposes marks.</strong>
             <p>Finds typed tools, spends scarce scans, reasons over evidence, and stages reversible patches.</p>
           </article>
           <div class="mission-link" aria-label="Current collaboration status">
@@ -108,7 +109,7 @@
           </div>
           <article class="role-card role-human">
             <span>Mission control / you</span>
-            <strong>Whole field. Final authority.</strong>
+            <strong>You see the field layer and approve marks.</strong>
             <p>Interprets the noisy spectral layer, answers uncertainty, and controls every committed cell.</p>
           </article>
         </section>
@@ -117,9 +118,9 @@
           <div class="how-to-heading">
             <div>
               <span class="eyebrow">New to the mission?</span>
-              <h2 id="howToTitle">Three moves. That’s the whole game.</h2>
+              <h2 id="howToTitle">The game has three moves.</h2>
             </div>
-            <span class="how-to-count">01 → 02 → 03</span>
+            <span class="how-to-count">01 / 02 / 03</span>
           </div>
           <div class="how-to-steps">
             <article class="how-to-step">
@@ -215,7 +216,7 @@
 
             <div class="turn-instruction" id="turnInstruction" aria-live="polite">
               <span class="turn-instruction-label">Your move</span>
-              <strong>01 · Dispatch the survey agent</strong>
+              <strong>01 / Dispatch the survey agent</strong>
               <p>Click the green button above. The agent will spend one scan and place exact evidence on this chart.</p>
             </div>
 
@@ -268,9 +269,9 @@
             <span class="eyebrow">The rescue protocol</span>
             <h2 id="toolDeckTitle">The page is the mission system.</h2>
             <p>
-              This is not an agent clicking through a game UI. WebMCP gives it a bounded
-              instrument panel: typed scans, scarce resources, reversible proposals, and a
-              structured human channel. The protocol creates the asymmetric rescue mission.
+              WebMCP gives the agent six page tools for scans, chart inspection, proposals,
+              questions, and safety checks. Every write changes the page's live state, and
+              proposals remain pending until you approve them.
             </p>
           </div>
           <ol class="tool-list">
@@ -286,7 +287,7 @@
 
       <footer>
         <span>Seven Transects / Rescue Atlas 07 / WebMCP Challenge 2026</span>
-        <span>Local-first · no accounts · no model key · one shared mission state</span>
+        <span>Local-first / no accounts / no model key / one shared mission state</span>
       </footer>
     </div>
 
