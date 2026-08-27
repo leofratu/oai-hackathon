@@ -1673,3 +1673,750 @@ footer {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Rescue Atlas command-deck redesign */
+
+:root {
+  --night: #071116;
+  --night-raised: #0c1c22;
+  --night-soft: #132a31;
+  --bone: #f0eadc;
+  --bone-muted: #a9b5ac;
+  --acid: #c9f36d;
+  --signal: #ff7551;
+  --cyan: #69d8d1;
+  --deck-line: rgb(188 222 202 / 18%);
+  --shadow: 0 28px 80px rgb(0 0 0 / 32%);
+}
+
+body {
+  color: var(--bone);
+  background:
+    radial-gradient(circle at 12% 8%, rgb(105 216 209 / 13%), transparent 28rem),
+    radial-gradient(circle at 88% 23%, rgb(201 243 109 / 7%), transparent 24rem),
+    var(--night);
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgb(105 216 209 / 3%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(105 216 209 / 3%) 1px, transparent 1px);
+  background-size: 42px 42px;
+  content: "";
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black, transparent 78%);
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline-color: var(--acid);
+}
+
+.shell {
+  width: min(1580px, calc(100% - 44px));
+}
+
+.masthead {
+  padding: 22px 3px 17px;
+  border-bottom-color: var(--deck-line);
+}
+
+.brand-mark {
+  color: var(--night);
+  background: var(--acid);
+  border-radius: 2px 13px 2px 13px;
+  box-shadow: 0 0 30px rgb(201 243 109 / 14%);
+}
+
+.brand-mark path:last-child {
+  stroke: var(--signal);
+}
+
+.brand strong {
+  color: var(--bone);
+}
+
+.brand small {
+  color: var(--bone-muted);
+}
+
+.webmcp-status {
+  color: var(--bone);
+  background: rgb(12 28 34 / 78%);
+  border-color: var(--deck-line);
+  border-radius: 3px 999px 999px 3px;
+  box-shadow: inset 3px 0 var(--cyan);
+}
+
+.webmcp-status[data-state="fallback"] .status-dot {
+  background: var(--signal);
+  box-shadow: 0 0 0 4px rgb(255 117 81 / 12%);
+}
+
+.hero {
+  position: relative;
+  grid-template-columns: minmax(0, 1.35fr) minmax(380px, 0.65fr);
+  gap: clamp(50px, 8vw, 130px);
+  min-height: 610px;
+  padding: 72px 0 52px;
+}
+
+.hero::before {
+  position: absolute;
+  top: 26px;
+  left: -14vw;
+  width: 54vw;
+  height: 520px;
+  background: repeating-radial-gradient(ellipse at 24% 54%, transparent 0 18px, rgb(105 216 209 / 7%) 19px 20px, transparent 21px 30px);
+  content: "";
+  opacity: 0.75;
+  pointer-events: none;
+  transform: rotate(-8deg);
+}
+
+.hero-copy,
+.protocol-primer {
+  z-index: 1;
+}
+
+.eyebrow,
+.panel-kicker,
+.control-label {
+  color: var(--cyan);
+}
+
+.hero .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--acid);
+}
+
+.live-pulse {
+  width: 7px;
+  height: 7px;
+  background: var(--signal);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgb(255 117 81 / 40%);
+  animation: live-pulse 1.8s ease-out infinite;
+}
+
+@keyframes live-pulse {
+  70% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+.hero h1 {
+  max-width: 940px;
+  color: var(--bone);
+  font-size: clamp(4rem, 7.2vw, 7.7rem);
+  letter-spacing: -0.07em;
+  line-height: 0.88;
+  text-wrap: balance;
+}
+
+.hero-copy > p {
+  max-width: 720px;
+  color: var(--bone-muted);
+  font-size: clamp(1rem, 1.35vw, 1.18rem);
+}
+
+.hero-copy > .hero-demo-note {
+  color: rgb(169 181 172 / 72%);
+}
+
+.button {
+  color: var(--bone);
+  background: var(--night-raised);
+  border-color: rgb(188 222 202 / 34%);
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+.button:hover:not(:disabled) {
+  box-shadow: 0 10px 28px rgb(0 0 0 / 30%);
+}
+
+.button-primary {
+  color: var(--night);
+  background: var(--acid);
+  border-color: var(--acid);
+}
+
+.button-primary span {
+  margin-left: 9px;
+  font-size: 1rem;
+}
+
+.button-quiet {
+  color: var(--bone);
+  background: transparent;
+}
+
+.mission-readouts {
+  display: grid;
+  max-width: 610px;
+  margin: 32px 0 0;
+  border-top: 1px solid var(--deck-line);
+  border-bottom: 1px solid var(--deck-line);
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.mission-readouts > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 15px;
+}
+
+.mission-readouts > div + div {
+  border-left: 1px solid var(--deck-line);
+}
+
+.mission-readouts dt {
+  color: var(--bone-muted);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.mission-readouts dd {
+  margin: 0;
+  color: var(--acid);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.protocol-primer {
+  padding: 28px;
+  background:
+    linear-gradient(145deg, rgb(105 216 209 / 8%), transparent 42%),
+    var(--night-raised);
+  border-color: rgb(105 216 209 / 35%);
+  border-radius: 2px;
+  box-shadow: 14px 14px 0 rgb(105 216 209 / 6%), var(--shadow);
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
+}
+
+.protocol-primer::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(45deg, var(--night-soft) 50%, transparent 51%);
+  content: "";
+}
+
+.protocol-primer-status {
+  color: var(--cyan);
+}
+
+.protocol-primer-status span:last-child {
+  color: var(--night);
+  background: var(--acid);
+}
+
+.protocol-primer h2 {
+  margin-bottom: 14px;
+  color: var(--bone);
+  font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.protocol-primer-lede {
+  margin: 0 0 24px;
+  color: var(--bone-muted);
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+.protocol-flow {
+  border-top-color: var(--deck-line);
+}
+
+.protocol-flow li {
+  border-bottom-color: var(--deck-line);
+}
+
+.protocol-flow strong {
+  color: var(--acid);
+}
+
+.protocol-flow code {
+  display: inline;
+  color: var(--cyan);
+}
+
+.protocol-dependency {
+  color: #ffd8cc;
+  background: rgb(255 117 81 / 9%);
+  border-color: rgb(255 117 81 / 46%);
+  border-radius: 2px;
+}
+
+.protocol-dependency strong {
+  color: var(--signal);
+}
+
+.role-band {
+  display: grid;
+  margin: 0 0 24px;
+  background: var(--night-raised);
+  border: 1px solid var(--deck-line);
+  border-radius: 2px;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 0.48fr) minmax(0, 1fr);
+}
+
+.role-card {
+  position: relative;
+  min-height: 142px;
+  padding: 25px 28px;
+  overflow: hidden;
+}
+
+.role-card::after {
+  position: absolute;
+  right: 20px;
+  bottom: -38px;
+  color: rgb(105 216 209 / 5%);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 8rem;
+  line-height: 1;
+  content: "A";
+}
+
+.role-human::after {
+  color: rgb(201 243 109 / 5%);
+  content: "H";
+}
+
+.role-card > span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--cyan);
+  font-size: 0.58rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.role-human > span {
+  color: var(--acid);
+}
+
+.role-card strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+  color: var(--bone);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.45rem;
+  font-weight: 500;
+}
+
+.role-card p {
+  position: relative;
+  z-index: 1;
+  max-width: 500px;
+  margin: 8px 0 0;
+  color: var(--bone-muted);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.mission-link {
+  display: grid;
+  padding: 20px;
+  text-align: center;
+  background: rgb(105 216 209 / 5%);
+  border-right: 1px solid var(--deck-line);
+  border-left: 1px solid var(--deck-line);
+  place-content: center;
+}
+
+.mission-link-line {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 1px;
+  margin: 8px 0;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+
+.mission-link-line::after {
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  background: var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--cyan);
+  content: "";
+}
+
+.mission-link small {
+  color: var(--cyan);
+  font-size: 0.54rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mission-link strong {
+  color: var(--bone);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+}
+
+.expedition {
+  background: var(--night-raised);
+  border-color: var(--deck-line);
+  border-radius: 3px;
+  box-shadow: var(--shadow);
+}
+
+.mission-panel,
+.notes-panel {
+  color: var(--bone);
+  background: var(--night-raised);
+}
+
+.mission-panel {
+  border-right-color: var(--deck-line);
+}
+
+.notes-panel {
+  border-left-color: var(--deck-line);
+}
+
+.panel-heading h2 {
+  color: var(--bone);
+}
+
+.mission-stats,
+.mission-stats > div,
+.seed-control,
+.note-card {
+  border-color: var(--deck-line);
+}
+
+.mission-stats dt,
+.seed-control label,
+.microcopy,
+.note-card p {
+  color: var(--bone-muted);
+}
+
+.mission-stats strong {
+  color: var(--bone);
+}
+
+.mission-stats dd span {
+  color: var(--bone-muted);
+}
+
+.charge-pips i {
+  height: 8px;
+  background: var(--cyan);
+  border-radius: 1px;
+  box-shadow: 0 0 12px rgb(105 216 209 / 24%);
+}
+
+.charge-pips i.is-spent {
+  background: rgb(169 181 172 / 18%);
+}
+
+.objective {
+  color: var(--night);
+  background: var(--acid);
+  border-radius: 2px 12px 2px 2px;
+  box-shadow: 7px 7px 0 rgb(201 243 109 / 8%);
+}
+
+.objective-number {
+  color: var(--acid);
+  background: var(--night);
+}
+
+.objective p {
+  color: #2f4934;
+}
+
+.swatch {
+  color: var(--bone-muted);
+  background: rgb(255 255 255 / 3%);
+  border-color: var(--deck-line);
+  border-radius: 2px;
+}
+
+.swatch.is-selected {
+  color: var(--night);
+  background: var(--bone);
+  border-color: var(--acid);
+  box-shadow: inset 3px 0 var(--acid);
+}
+
+kbd {
+  color: inherit;
+  background: transparent;
+  border-color: currentColor;
+}
+
+.seed-control input {
+  color: var(--bone);
+  background: var(--night);
+  border-color: rgb(188 222 202 / 34%);
+  border-radius: 2px 0 0 2px;
+}
+
+.seed-control button {
+  color: var(--night);
+  background: var(--cyan);
+  border-color: var(--cyan);
+  border-radius: 0 2px 2px 0;
+}
+
+.map-panel {
+  color: var(--ink);
+  background:
+    linear-gradient(rgb(240 234 220 / 93%), rgb(240 234 220 / 93%)),
+    repeating-linear-gradient(0deg, transparent 0 23px, rgb(16 42 43 / 7%) 24px),
+    repeating-linear-gradient(90deg, transparent 0 23px, rgb(16 42 43 / 7%) 24px);
+}
+
+.map-panel .panel-kicker {
+  color: var(--water-dark);
+}
+
+.map-toolbar h2 {
+  color: var(--ink);
+}
+
+.map-panel .button {
+  color: var(--ink);
+  background: transparent;
+  border-color: var(--ink-soft);
+}
+
+.map-panel .button-dark {
+  color: var(--acid);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.chart-grid {
+  border: 2px solid var(--ink);
+  border-radius: 1px;
+  box-shadow: 10px 11px 0 rgb(7 17 22 / 13%);
+}
+
+.chart-grid::after {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  background: linear-gradient(transparent 0 48%, rgb(105 216 209 / 13%) 50%, transparent 52%);
+  background-size: 100% 14px;
+  content: "";
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.pending-count {
+  color: var(--night);
+  background: var(--acid);
+  border-radius: 2px;
+}
+
+.protocol-console {
+  background: var(--night);
+  border: 1px solid rgb(105 216 209 / 30%);
+  border-radius: 2px;
+  box-shadow: 7px 7px 0 rgb(105 216 209 / 6%);
+}
+
+.trace-light,
+.trace-access {
+  background: var(--cyan);
+}
+
+.trace-access-write {
+  background: var(--signal);
+}
+
+.trace-event code strong {
+  color: var(--acid);
+}
+
+.feed-label {
+  color: var(--bone-muted);
+}
+
+.feed-label::after {
+  background: var(--deck-line);
+}
+
+.note-card strong {
+  color: var(--bone);
+}
+
+.note-marker {
+  color: var(--night);
+  background: var(--cyan);
+  border-radius: 1px 9px 1px 1px;
+}
+
+.note-proposal .note-marker,
+.note-focus .note-marker,
+.note-consult .note-marker {
+  background: var(--signal);
+}
+
+.note-human .note-marker {
+  background: var(--acid);
+}
+
+.focus-card,
+.proposal-card {
+  border-radius: 2px 12px 2px 2px;
+}
+
+.tool-deck {
+  margin-top: 24px;
+  padding-right: clamp(18px, 4vw, 64px);
+  padding-left: clamp(18px, 4vw, 64px);
+  background:
+    linear-gradient(100deg, rgb(105 216 209 / 6%), transparent 38%),
+    var(--night-raised);
+  border: 1px solid var(--deck-line);
+  border-radius: 2px;
+}
+
+.tool-deck h2 {
+  color: var(--bone);
+}
+
+.tool-deck-copy p,
+.tool-list span {
+  color: var(--bone-muted);
+}
+
+.tool-list {
+  border-top-color: rgb(105 216 209 / 45%);
+}
+
+.tool-list li {
+  border-bottom-color: var(--deck-line);
+}
+
+.tool-list code {
+  color: var(--acid);
+}
+
+footer {
+  color: var(--bone-muted);
+  border-top-color: var(--deck-line);
+}
+
+.toast {
+  color: var(--night);
+  background: var(--acid);
+  border-radius: 2px 10px 2px 2px;
+}
+
+@media (max-width: 1120px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 34px;
+    min-height: 0;
+  }
+
+  .protocol-primer-lede {
+    grid-column: 1;
+  }
+
+  .protocol-flow {
+    grid-row: 1 / span 4;
+  }
+
+  .role-band {
+    grid-template-columns: 1fr 190px 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .shell {
+    width: min(calc(100% - 20px), 620px);
+  }
+
+  .hero {
+    padding-top: 48px;
+  }
+
+  .hero::before {
+    left: -40vw;
+    width: 130vw;
+  }
+
+  .hero h1 {
+    font-size: clamp(3.35rem, 16vw, 4.6rem);
+    line-height: 0.9;
+    overflow-wrap: normal;
+  }
+
+  .mission-readouts {
+    margin-top: 24px;
+  }
+
+  .mission-readouts > div {
+    align-items: flex-start;
+    padding: 12px 8px;
+    flex-direction: column-reverse;
+  }
+
+  .role-band {
+    grid-template-columns: 1fr;
+  }
+
+  .role-card {
+    min-height: 0;
+    padding: 22px;
+  }
+
+  .mission-link {
+    padding: 13px 22px;
+    border: 0;
+    border-top: 1px solid var(--deck-line);
+    border-bottom: 1px solid var(--deck-line);
+  }
+
+  .mission-link-line {
+    display: none;
+  }
+
+  .notes-panel {
+    border-top-color: var(--deck-line);
+  }
+
+  .tool-deck {
+    padding: 68px 22px;
+  }
+}
+
+@media (max-width: 440px) {
+  .hero-actions .button {
+    width: 100%;
+  }
+
+  .mission-readouts dt {
+    min-height: 28px;
+  }
+}
