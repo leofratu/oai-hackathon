@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#102a2b" />
     <link rel="icon" href="/seven-transects-mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/styles.css" />
-    <title>Seven Transects: chart the coast before the signal dies</title>
+    <title>Seven Transects: audit an agent under uncertainty</title>
   </head>
   <body>
     <div class="shell">
@@ -34,23 +34,22 @@
       <main id="top">
         <section class="hero" aria-labelledby="heroTitle">
           <div class="hero-copy">
-            <div class="eyebrow"><span class="live-pulse" aria-hidden="true"></span> Operation Northstar / signal live</div>
-            <h1 id="heroTitle">Chart the coast before the signal dies.</h1>
+            <div class="eyebrow"><span class="live-pulse" aria-hidden="true"></span> Playable WebMCP training mission</div>
+            <h1 id="heroTitle">Map the island with an agent you can audit.</h1>
             <p>
-              Your job is to correctly color 72 of the island's 144 squares. ChatGPT has seven
-              exact scans, and each scan covers one narrow cross. You see the whole island through
-              a noisy field layer and decide which marks stay on the chart.
-              WebMCP is the live mission link between you.
+              The agent has seven exact scans. You see a noisy field layer and approve every chart
+              change. Reach 72 correct cells at 88% precision while the WebMCP trace records each
+              read, write, proposal, and human handoff.
             </p>
             <div class="hero-actions">
-              <button class="button button-primary" id="demoTurnButton" type="button">
-                Dispatch survey agent
+              <button class="button button-primary" id="copyPromptButton" type="button">
+                Copy ChatGPT mission
               </button>
-              <button class="button button-quiet" id="copyPromptButton" type="button">
-                Copy mission prompt
+              <button class="button button-quiet" id="demoTurnButton" type="button">
+                Run local tool replay
               </button>
             </div>
-            <p class="hero-demo-note">No model key needed. The demo runs the same handlers as a native WebMCP agent.</p>
+            <p class="hero-demo-note" id="heroDemoNote">Checking for native WebMCP before starting...</p>
             <p class="prompt-feedback" id="promptFeedback" role="status" aria-live="polite"></p>
             <dl class="mission-readouts" aria-label="Mission constraints">
               <div><dt>Scan windows</dt><dd>07</dd></div>
@@ -62,10 +61,10 @@
           <aside class="protocol-primer" aria-labelledby="protocolPrimerTitle">
             <div class="protocol-primer-status">
               <span>Mission link / WebMCP</span>
-              <span>Link armed</span>
+              <span id="protocolLinkState">Checking</span>
             </div>
-            <h2 id="protocolPrimerTitle">You and the agent share one chart.</h2>
-            <p class="protocol-primer-lede">The page exposes six bounded tools. The agent receives structured evidence and sends each proposed change to you for review.</p>
+            <h2 id="protocolPrimerTitle">Six page tools connect both roles.</h2>
+            <p class="protocol-primer-lede">The agent receives structured evidence instead of reading 144 grid buttons. Proposed changes remain pending until you review them.</p>
             <div class="tool-manifest" aria-label="WebMCP tools registered by this page">
               <div class="tool-manifest-heading"><span id="toolManifestHeading">Tool contract declared here</span><code>6 registerTool calls</code></div>
               <div class="tool-manifest-list">
@@ -77,20 +76,20 @@
             <ol class="protocol-flow">
               <li>
                 <span>01</span>
-                <div><strong>Agent scans</strong><p>Calls <code>survey_region</code> for an exact cross-section.</p></div>
+                <div><strong>Agent calls a page tool</strong><p><code>survey_region</code> spends a scan and returns exact cells.</p></div>
               </li>
               <li>
                 <span>02</span>
-                <div><strong>WebMCP carries evidence</strong><p>Typed results alter this same visible mission state.</p></div>
+                <div><strong>The page updates</strong><p>The typed result changes this same visible chart.</p></div>
               </li>
               <li>
                 <span>03</span>
-                <div><strong>You authorize</strong><p>Approve the landing chart, reject it, or send a field reading back.</p></div>
+                <div><strong>You decide what commits</strong><p>Approve a patch, reject it, or send a field reading back.</p></div>
               </li>
             </ol>
             <div class="protocol-dependency">
-              <strong>What WebMCP controls</strong>
-              <span>Agent scans, structured questions, proposals, and chart inspection.</span>
+              <strong>Why WebMCP is required</strong>
+              <span>The agent discovers bounded actions, receives typed evidence, and changes the live page without guessing at UI controls.</span>
             </div>
           </aside>
         </section>
@@ -103,7 +102,7 @@
           </article>
           <div class="mission-link" aria-label="Current collaboration status">
             <span class="mission-link-line" aria-hidden="true"></span>
-            <small>WebMCP live state</small>
+            <small id="missionLinkLabel">Checking WebMCP state</small>
             <strong id="missionPhase">Awaiting dispatch</strong>
             <span class="mission-link-line" aria-hidden="true"></span>
           </div>
@@ -118,22 +117,22 @@
           <div class="how-to-heading">
             <div>
               <span class="eyebrow">New to the mission?</span>
-              <h2 id="howToTitle">The game has three moves.</h2>
+              <h2 id="howToTitle">One turn has three steps.</h2>
             </div>
             <span class="how-to-count">01 / 02 / 03</span>
           </div>
           <div class="how-to-steps">
             <article class="how-to-step">
               <span>01</span>
-              <div><strong>Dispatch the agent</strong><p>Click the green button. ChatGPT spends one scan and reveals a cross of exact squares.</p></div>
+              <div><strong>Ask ChatGPT to scan</strong><p>Copy the mission prompt. In ChatGPT's browser, the agent discovers the six tools registered by this page.</p></div>
             </article>
             <article class="how-to-step">
               <span>02</span>
-              <div><strong>Review the patch</strong><p>Gold-striped squares are suggestions. Accept the good ones or reject the whole patch.</p></div>
+              <div><strong>Review the patch</strong><p>A scan spends one charge. Accept verified evidence, accept the full patch, or reject it.</p></div>
             </article>
             <article class="how-to-step">
               <span>03</span>
-              <div><strong>Use your eyes</strong><p>Answer the pinned question, then dispatch again. Fill gaps until the chart reaches 72 correct squares.</p></div>
+              <div><strong>Send a human reading</strong><p>Answer the pinned question. The agent reads your structured answer through <code>inspect_chart</code>.</p></div>
             </article>
           </div>
         </section>
@@ -211,13 +210,13 @@
 
             <div class="field-lens-callout">
               <span class="lens-icon" aria-hidden="true"></span>
-              <p><strong>Spectral layer / human channel.</strong> Soft color is your noisy wide-field reading and is absent from tool results. Dark glyphs are exact agent scans.</p>
+              <p><strong>Spectral layer / human decision channel.</strong> Soft color is the reading you interpret and authorize. It is omitted from tool results. Dark glyphs are exact scan evidence.</p>
             </div>
 
             <div class="turn-instruction" id="turnInstruction" aria-live="polite">
               <span class="turn-instruction-label">Your move</span>
-              <strong>01 / Dispatch the survey agent</strong>
-              <p>Click the green button above. The agent will spend one scan and place exact evidence on this chart.</p>
+              <strong>01 / Connect a browser agent</strong>
+              <p>Copy the mission above and ask ChatGPT to use this page's Site tools. Local replay is available for deterministic testing.</p>
             </div>
 
             <div class="focus-banner" id="focusBanner" hidden></div>
@@ -256,7 +255,7 @@
                 </div>
                 <span id="traceCount">0 calls</span>
               </div>
-              <p class="protocol-console-intro">Every agent action enters through a registered page tool. Mutations stay visible and reviewable.</p>
+              <p class="protocol-console-intro">Every tool handler records its source, input, result, and read/write class. Mutations stay visible and reviewable.</p>
               <div class="protocol-trace" id="protocolTrace" aria-live="polite"></div>
             </section>
             <div class="feed-label"><span>Shared decisions</span></div>
@@ -267,11 +266,11 @@
         <section class="tool-deck" aria-labelledby="toolDeckTitle">
           <div class="tool-deck-copy">
             <span class="eyebrow">The rescue protocol</span>
-            <h2 id="toolDeckTitle">The page is the mission system.</h2>
+              <h2 id="toolDeckTitle">A visible test of agent supervision.</h2>
             <p>
-              WebMCP gives the agent six page tools for scans, chart inspection, proposals,
-              questions, and safety checks. Every write changes the page's live state, and
-              proposals remain pending until you approve them.
+              Seven Transects is for developers and product teams studying human approval,
+              limited agent budgets, and shared browser state. WebMCP gives the agent six page
+              tools. Every write changes the visible page, and proposals wait for a person.
             </p>
           </div>
           <ol class="tool-list">

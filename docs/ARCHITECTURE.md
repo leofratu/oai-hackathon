@@ -13,7 +13,7 @@ There is no backend, account system, database, or model API. The deployed artifa
 
 ## Information boundary
 
-The agent-facing functions never return the truth map, island seed, or exact live precision. The agent receives sparse exact transects. The person receives a noisy visual field lens and controls every committed proposal. Structured human observations return to the agent through `inspect_chart`.
+The agent-facing functions never return the truth map, island seed, or exact live precision. The agent receives sparse exact transects. The person interprets a noisy visual field lens and controls every committed proposal. A browser agent may still observe the rendered page. Only the person's authorized, structured reading returns through `inspect_chart`.
 
 This is a game boundary implemented through the WebMCP contract, not a cryptographic boundary against a user inspecting downloaded client code.
 

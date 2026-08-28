@@ -225,6 +225,12 @@ a:focus-visible {
   gap: 10px;
 }
 
+.trace-origin {
+  margin-left: auto;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .protocol-primer-status {
   color: var(--lime);
   font-size: 0.57rem;

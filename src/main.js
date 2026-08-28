@@ -44,7 +44,9 @@ const elements = {
   finalTeamwork: document.querySelector("#finalTeamwork"),
   finaleSeed: document.querySelector("#finaleSeed"),
   focusBanner: document.querySelector("#focusBanner"),
+  heroDemoNote: document.querySelector("#heroDemoNote"),
   missionDeck: document.querySelector("#missionDeck"),
+  missionLinkLabel: document.querySelector("#missionLinkLabel"),
   missionPhase: document.querySelector("#missionPhase"),
   newExpeditionButton: document.querySelector("#newExpeditionButton"),
   newFromFinaleButton: document.querySelector("#newFromFinaleButton"),
@@ -54,6 +56,7 @@ const elements = {
   pendingCount: document.querySelector("#pendingCount"),
   promptFeedback: document.querySelector("#promptFeedback"),
   protocolTrace: document.querySelector("#protocolTrace"),
+  protocolLinkState: document.querySelector("#protocolLinkState"),
   revealButton: document.querySelector("#revealButton"),
   rowAxis: document.querySelector("#rowAxis"),
   scoreButton: document.querySelector("#scoreButton"),
@@ -74,6 +77,7 @@ let activeGridIndex = 0;
 let toastTimer;
 let protocolEvents = [];
 let protocolSequence = 0;
+let toolInvocationSource = "site tool";
 
 function setSiteToolStatus({ state: statusState, message }) {
   elements.webmcpStatus.dataset.state = statusState;
@@ -84,6 +88,18 @@ function setSiteToolStatus({ state: statusState, message }) {
     : statusState === "fallback"
       ? "Declared here / replay mode"
       : "Tool contract declared here";
+  elements.protocolLinkState.textContent = statusState === "ready"
+    ? "Native tools live"
+    : statusState === "fallback"
+      ? "Replay only"
+      : statusState === "error"
+        ? "Registration error"
+        : "Checking";
+  elements.missionLinkLabel.textContent = statusState === "ready"
+    ? "Native WebMCP state"
+    : statusState === "fallback"
+      ? "Local replay state"
+      : "WebMCP connection state";
   elements.runtimeProof.textContent = statusState === "ready"
     ? "Native WebMCP is active: an external agent can discover these six tools on this page."
     : statusState === "fallback"
@@ -91,6 +107,13 @@ function setSiteToolStatus({ state: statusState, message }) {
       : statusState === "error"
         ? "Native WebMCP registration failed. The local replay remains available for testing."
         : "Checking whether this browser exposes native WebMCP...";
+  elements.heroDemoNote.textContent = statusState === "ready"
+    ? "Native WebMCP is connected. Copy the mission and ask ChatGPT to use this page's Site tools."
+    : statusState === "fallback"
+      ? "No native WebMCP was found in this browser. Local replay calls the production handlers and labels its trace."
+      : statusState === "error"
+        ? "Tool registration failed in this browser. Local replay is still available for deterministic testing."
+        : "Checking for native WebMCP before starting...";
 }
 
 function showToast(message) {
@@ -105,7 +128,7 @@ function renderProtocolTrace() {
   if (!protocolEvents.length) {
     const empty = document.createElement("p");
     empty.className = "protocol-trace-empty";
-    empty.textContent = "No calls yet. Run the demo to watch the same tool path a WebMCP agent uses.";
+    empty.textContent = "No calls yet. Use ChatGPT Site tools, or run the clearly labeled local replay.";
     elements.protocolTrace.replaceChildren(empty);
     return;
   }
@@ -122,7 +145,10 @@ function renderProtocolTrace() {
     badge.textContent = event.access;
     const sequence = document.createElement("span");
     sequence.textContent = `#${String(event.sequence).padStart(2, "0")}`;
-    heading.append(badge, sequence);
+    const source = document.createElement("span");
+    source.className = "trace-origin";
+    source.textContent = event.source;
+    heading.append(badge, source, sequence);
 
     const call = document.createElement("code");
     const toolName = document.createElement("strong");
@@ -146,6 +172,7 @@ function recordToolEvent(event) {
     input: formatToolInput(event.name, event.input),
     name: event.name,
     sequence: protocolSequence,
+    source: toolInvocationSource,
     status: event.status,
     summary: summarizeToolEvent(event),
   });
@@ -349,15 +376,15 @@ function proposalCard(proposal) {
   });
   const acceptCertain = document.createElement("button");
   acceptCertain.type = "button";
-  acceptCertain.textContent = "Accept 80%+";
-  acceptCertain.setAttribute("aria-label", `Accept only high-confidence cells from proposal of ${proposal.cells.length} marks`);
+  acceptCertain.textContent = "Accept verified";
+  acceptCertain.setAttribute("aria-label", `Accept exact scans and authorized human readings from proposal of ${proposal.cells.length} marks`);
   acceptCertain.addEventListener("click", () => {
     try {
       const score = acceptProposal(state, proposal.id, {
-        minimumConfidence: 0.8,
-        reason: "Accepted only high-confidence marks; uncertain cells need more evidence.",
+        allowedBases: ["exact", "human-reading"],
+        reason: "Accepted exact scans and authorized human readings; inferred cells need more evidence.",
       });
-      showToast(`High-confidence marks committed / ${formatPercent(score.coverage)}% charted`);
+      showToast(`Evidence-backed marks committed / ${formatPercent(score.coverage)}% charted`);
       render();
     } catch (error) {
       showToast(error.message);
@@ -500,13 +527,13 @@ function renderTurnInstruction() {
   }
   if (state.proposals.some((proposal) => proposal.status === "pending")) {
     title.textContent = "02 / Review the gold-striped patch";
-    detail.textContent = "Accept 80%+ to keep only strong marks, accept the full patch, or reject it and ask the agent to try again.";
+    detail.textContent = "Accept verified to keep exact scans and authorized human readings, accept the full patch, or reject it.";
     elements.turnInstruction.dataset.state = "review";
     return;
   }
   if (state.surveysRemaining === SURVEY_LIMIT) {
-    title.textContent = "01 / Dispatch the survey agent";
-    detail.textContent = "Click the green button above. The agent spends one scan and places exact evidence on this chart.";
+    title.textContent = "01 / Connect a browser agent";
+    detail.textContent = "Copy the mission above and ask ChatGPT to use Site tools. Use local replay only when testing without native WebMCP.";
     elements.turnInstruction.dataset.state = "dispatch";
     return;
   }
@@ -566,6 +593,14 @@ function deduplicateSurveyCells(surveys) {
 }
 
 async function runPreviewTurn() {
+  const callLocalTool = async (name, input) => {
+    toolInvocationSource = "local replay";
+    try {
+      return await toolHandlers[name](input);
+    } finally {
+      toolInvocationSource = "site tool";
+    }
+  };
   try {
     if (state.proposals.some((proposal) => proposal.status === "pending")) {
       showToast("Review the pending proposal before the agent takes another turn.");
@@ -575,8 +610,8 @@ async function runPreviewTurn() {
       showToast("Answer the agent's field-reading question first.");
       return;
     }
-    await toolHandlers.get_expedition_state();
-    const sharedChart = await toolHandlers.inspect_chart();
+    await callLocalTool("get_expedition_state");
+    const sharedChart = await callLocalTool("inspect_chart");
     const route = [
       { row: 6, column: 6 },
       { row: 3, column: 3 },
@@ -588,7 +623,7 @@ async function runPreviewTurn() {
     ];
     const used = new Set(state.surveys.map((survey) => `${survey.row}:${survey.column}`));
     const center = route.find((candidate) => !used.has(`${candidate.row}:${candidate.column}`));
-    const survey = center && state.surveysRemaining > 0 ? await toolHandlers.survey_region(center) : null;
+    const survey = center && state.surveysRemaining > 0 ? await callLocalTool("survey_region", center) : null;
     const cells = survey ? deduplicateSurveyCells([survey]) : [];
     const exactKeys = new Set(cells.map((cell) => `${cell.row}:${cell.column}`));
     const committedKeys = new Set(sharedChart.committedCells.map((cell) => `${cell.row}:${cell.column}:${cell.terrain}`));
@@ -625,20 +660,20 @@ async function runPreviewTurn() {
         basis: "inferred",
       });
     }
-    await toolHandlers.propose_chart_patch({
+    await callLocalTool("propose_chart_patch", {
       cells,
       rationale: survey
         ? "Exact cross-transect readings are high confidence. Prior human field readings are carried forward, while one diagonal interpolation remains deliberately uncertain."
         : "The survey budget is spent. This final patch carries the human's structured field reading back into the shared chart.",
     });
     if (inferred) {
-      await toolHandlers.focus_human_attention({
+      await callLocalTool("focus_human_attention", {
         ...inferred,
         note: "My diagonal interpolation is uncertain. What does your noisy field lens suggest here?",
         options: ["water", "meadow", "forest", "ridge"],
       });
     }
-    showToast(survey ? "Remote surveyor spent one signal window and staged a landing patch." : "Remote surveyor consumed the final human reading and staged it for approval.");
+    showToast(survey ? "Local replay spent one signal window and staged a landing patch." : "Local replay consumed the final human reading and staged it for approval.");
     requestAnimationFrame(() => {
       elements.missionDeck.scrollIntoView({
         behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
