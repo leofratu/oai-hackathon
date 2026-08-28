@@ -4,13 +4,15 @@ Seven Transects is a rescue-mapping game for the 2026 WebMCP Challenge. A fleet 
 
 The MVP is a static Vite app with no backend, account, model API key, or paid service.
 
+**Live app:** https://leofratu.github.io/oai-hackathon/
+
 ## WebMCP in 30 seconds
 
 When the page opens, it registers six tools through `document.modelContext.registerTool`. A compatible browser agent discovers those tools and calls them against the page's live game state. Tool results contain structured data with bounded side effects.
 
 The player flow is:
 
-1. Click **Dispatch survey agent**. It spends one of seven scans and reveals a cross of exact squares.
+1. Open the page in ChatGPT's browser, copy the mission prompt, and ask ChatGPT to use the page's Site tools. For deterministic testing in another browser, choose **Run local tool replay**.
 2. Review the gold-striped proposal. Accept strong marks, reject it, or accept the whole patch.
 3. Answer the pinned spectral-layer question, then dispatch again. Keep going until 72 squares are correct.
 
@@ -27,7 +29,7 @@ Most agent-enabled games expose ordinary moves. Seven Transects uses the tool co
 - `propose_chart_patch` creates a translucent overlay; it cannot commit cells.
 - Exact evidence is rendered on the shared chart, while inference confidence and basis remain auditable.
 - The human can accept only high-confidence cells, reject with feedback, or manually correct a patch.
-- `focus_human_attention` asks a structured question about the human's noisy visual clue; `inspect_chart` returns the answer to the agent.
+- `focus_human_attention` asks a structured question about the human-owned visual clue; `inspect_chart` returns the person's authorized answer to the agent.
 - `consult_compass` spends one of only two checks and returns a broad confidence band, preventing score-oracle probing.
 
 WebMCP provides external agent discovery, structured evidence exchange, and the agent-human handoff used by the game.
@@ -126,6 +128,8 @@ netlify.toml           Optional Netlify deployment configuration
 - [Architecture](docs/ARCHITECTURE.md)
 - [WebMCP contract](docs/WEBMCP_CONTRACT.md)
 - [Three-minute demo](docs/DEMO_SCRIPT.md)
+- [Devpost submission draft](docs/SUBMISSION.md)
+- [Verification record](docs/VERIFICATION.md)
 - [Deployment](docs/DEPLOYMENT.md)
 - [OxAlpha review summary](docs/OXALPHA_REVIEW.md)
 - [Security model](SECURITY.md)
