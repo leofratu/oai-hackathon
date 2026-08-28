@@ -3,13 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test"
+    "test": "node --test",
+    "test:browser": "node scripts/browser-flow.mjs",
+    "verify": "npm test && npm run test:browser && npm run build"
   },
   "devDependencies": {
+    "playwright": "^1.62.1",
     "vite": "^7.1.3"
   }
 }
