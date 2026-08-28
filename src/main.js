@@ -592,15 +592,16 @@ function deduplicateSurveyCells(surveys) {
   return [...cells.values()];
 }
 
+async function callLocalTool(name, input) {
+  toolInvocationSource = "local replay";
+  try {
+    return await toolHandlers[name](input);
+  } finally {
+    toolInvocationSource = "site tool";
+  }
+}
+
 async function runPreviewTurn() {
-  const callLocalTool = async (name, input) => {
-    toolInvocationSource = "local replay";
-    try {
-      return await toolHandlers[name](input);
-    } finally {
-      toolInvocationSource = "site tool";
-    }
-  };
   try {
     if (state.proposals.some((proposal) => proposal.status === "pending")) {
       showToast("Review the pending proposal before the agent takes another turn.");
@@ -806,6 +807,7 @@ const toolDefinitions = buildToolDefinitions(toolHandlers);
 window.__sevenTransects = { tools: toolHandlers, toolDefinitions };
 if (new URLSearchParams(window.location.search).has("debug")) {
   window.__sevenTransects.getDebugState = () => state;
+  window.__sevenTransects.replayTool = callLocalTool;
 }
 
 registerWebMCP(toolDefinitions, setSiteToolStatus);
