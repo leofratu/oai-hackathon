@@ -54,7 +54,13 @@ export function createToolHandlers(getState, onChange, onToolEvent = () => {}) {
   const invoke = (name, input, operation, mutates = false) => {
     try {
       const result = operation(getState());
-      if (mutates) onChange();
+      if (mutates) {
+        try {
+          onChange();
+        } catch (renderError) {
+          console.error("Seven Transects could not render a completed WebMCP action", renderError);
+        }
+      }
       notify({ name, input: input || {}, result, access: mutates ? "write" : "read", status: "success" });
       return result;
     } catch (cause) {
@@ -129,22 +135,23 @@ export function buildToolDefinitions(handlers) {
         properties: {
           cells: {
             type: "array",
+            description: "One to 32 terrain marks to stage for human review.",
             minItems: 1,
             maxItems: 32,
             items: {
               type: "object",
               properties: {
-                row: { type: "integer", minimum: 1, maximum: GRID_SIZE },
-                column: { type: "integer", minimum: 1, maximum: GRID_SIZE },
-                terrain: { type: "string", enum: ["water", "meadow", "forest", "ridge"] },
-                confidence: { type: "number", minimum: 0, maximum: 1 },
-                basis: { type: "string", enum: ["exact", "inferred", "human-reading"] },
+                row: { type: "integer", minimum: 1, maximum: GRID_SIZE, description: "One-based chart row." },
+                column: { type: "integer", minimum: 1, maximum: GRID_SIZE, description: "One-based chart column." },
+                terrain: { type: "string", enum: ["water", "meadow", "forest", "ridge"], description: "Terrain to stage at this coordinate." },
+                confidence: { type: "number", minimum: 0, maximum: 1, description: "Confidence from zero to one. Omit only when 0.7 is appropriate." },
+                basis: { type: "string", enum: ["exact", "inferred", "human-reading"], description: "Evidence source for this proposed mark." },
               },
               required: ["row", "column", "terrain"],
               additionalProperties: false,
             },
           },
-          rationale: { type: "string", minLength: 1, maxLength: 240 },
+          rationale: { type: "string", minLength: 1, maxLength: 240, description: "Short reason the human should accept or question this patch." },
         },
         required: ["cells", "rationale"],
         additionalProperties: false,
@@ -160,11 +167,12 @@ export function buildToolDefinitions(handlers) {
       inputSchema: {
         type: "object",
         properties: {
-          row: { type: "integer", minimum: 1, maximum: GRID_SIZE },
-          column: { type: "integer", minimum: 1, maximum: GRID_SIZE },
-          note: { type: "string", minLength: 1, maxLength: 160 },
+          row: { type: "integer", minimum: 1, maximum: GRID_SIZE, description: "One-based row for the human to inspect." },
+          column: { type: "integer", minimum: 1, maximum: GRID_SIZE, description: "One-based column for the human to inspect." },
+          note: { type: "string", minLength: 1, maxLength: 160, description: "A direct question about the human-owned field layer." },
           options: {
             type: "array",
+            description: "Two to four terrain answers the human can choose from.",
             minItems: 2,
             maxItems: 4,
             uniqueItems: true,
@@ -190,17 +198,23 @@ export function buildToolDefinitions(handlers) {
 }
 
 export async function registerWebMCP(definitions, onStatus) {
-  const modelContext = document.modelContext ?? navigator.modelContext ?? globalThis.modelContext;
-  if (typeof modelContext?.registerTool !== "function") {
-    onStatus({ state: "fallback", message: "Simulator active / WebMCP off" });
+  const documentModelContext = document.modelContext;
+  if (typeof documentModelContext?.registerTool !== "function") {
+    onStatus({ state: "fallback", message: "Local replay / WebMCP off" });
     return false;
   }
 
+  const registrationController = new AbortController();
   try {
-    await Promise.all(definitions.map((definition) => modelContext.registerTool(definition)));
+    await Promise.all(
+      definitions.map((definition) =>
+        document.modelContext.registerTool(definition, { signal: registrationController.signal }),
+      ),
+    );
     onStatus({ state: "ready", message: `WebMCP live / ${definitions.length} tools` });
     return true;
   } catch (error) {
+    registrationController.abort();
     console.error("Seven Transects could not register WebMCP tools", error);
     onStatus({ state: "error", message: "WebMCP registration failed" });
     return false;

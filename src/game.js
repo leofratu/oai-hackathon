@@ -172,8 +172,8 @@ export function surveyRegion(state, input) {
   if (state.revealed) throw new Error("This expedition is already finished.");
   if (state.surveysRemaining <= 0) throw new Error("No survey charges remain.");
 
-  const row = Number(input?.row);
-  const column = Number(input?.column);
+  const row = input?.row;
+  const column = input?.column;
   assertInteger(row, "row", 1, GRID_SIZE);
   assertInteger(column, "column", 1, GRID_SIZE);
   if (state.surveys.some((survey) => survey.row === row && survey.column === column)) {
@@ -248,10 +248,10 @@ export function proposeChartPatch(state, input) {
 
   const unique = new Map();
   for (const candidate of input.cells) {
-    const row = Number(candidate?.row);
-    const column = Number(candidate?.column);
+    const row = candidate?.row;
+    const column = candidate?.column;
     const terrain = candidate?.terrain;
-    const confidence = candidate?.confidence === undefined ? 0.7 : Number(candidate.confidence);
+    let confidence = candidate?.confidence === undefined ? 0.7 : candidate.confidence;
     const basis = candidate?.basis || "inferred";
     assertInteger(row, "row", 1, GRID_SIZE);
     assertInteger(column, "column", 1, GRID_SIZE);
@@ -262,10 +262,27 @@ export function proposeChartPatch(state, input) {
     if (!["exact", "inferred", "human-reading"].includes(basis)) {
       throw new TypeError("basis must be exact, inferred, or human-reading.");
     }
+    if (basis === "exact") {
+      const evidence = state.surveys
+        .flatMap((survey) => [...survey.rowTransect, ...survey.columnTransect])
+        .find((cell) => cell.row === row && cell.column === column && cell.terrain === terrain);
+      if (!evidence) throw new Error(`Exact basis at row ${row}, column ${column} does not match a completed survey.`);
+    }
+    if (basis === "human-reading") {
+      const observation = state.humanObservations.find(
+        (item) => item.row === row && item.column === column && item.terrain === terrain,
+      );
+      if (!observation) throw new Error(`Human-reading basis at row ${row}, column ${column} has no matching answer.`);
+      confidence = Math.min(confidence, observation.confidence);
+    }
     unique.set(`${row}:${column}`, { row, column, terrain, confidence, basis });
   }
 
-  const rationale = String(input.rationale || "Evidence from the latest survey.").trim().slice(0, 240);
+  if (typeof input.rationale !== "string") throw new TypeError("rationale must be a string.");
+  const rationale = input.rationale.trim();
+  if (!rationale.length || rationale.length > 240) {
+    throw new RangeError("rationale must contain 1 to 240 characters.");
+  }
   const cells = [...unique.values()];
   const signature = cells
     .map((cell) => `${cell.row}:${cell.column}:${cell.terrain}`)
@@ -313,9 +330,11 @@ export function acceptProposal(state, proposalId, options = {}) {
 
   const requestedKeys = Array.isArray(options.cellKeys) ? new Set(options.cellKeys) : null;
   const minimumConfidence = options.minimumConfidence === undefined ? null : Number(options.minimumConfidence);
+  const allowedBases = Array.isArray(options.allowedBases) ? new Set(options.allowedBases) : null;
   const acceptedCells = proposal.cells.filter((cell) => {
     if (requestedKeys && !requestedKeys.has(`${cell.row}:${cell.column}`)) return false;
     if (minimumConfidence !== null && cell.confidence < minimumConfidence) return false;
+    if (allowedBases && !allowedBases.has(cell.basis)) return false;
     return true;
   });
   if (!acceptedCells.length) throw new Error("Select at least one proposed cell to accept.");
@@ -381,14 +400,20 @@ export function focusHumanAttention(state, input) {
   if (state.focus?.status === "pending") {
     throw new Error("A human field reading is already awaiting an answer.");
   }
-  const row = Number(input?.row);
-  const column = Number(input?.column);
+  const row = input?.row;
+  const column = input?.column;
   assertInteger(row, "row", 1, GRID_SIZE);
   assertInteger(column, "column", 1, GRID_SIZE);
-  const note = String(input?.note || "Please inspect this region.").trim().slice(0, 160);
-  const options = Array.isArray(input?.options) && input.options.length
-    ? [...new Set(input.options)].slice(0, 4)
-    : TERRAIN_NAMES;
+  if (typeof input?.note !== "string") throw new TypeError("note must be a string.");
+  const note = input.note.trim();
+  if (!note.length || note.length > 160) throw new RangeError("note must contain 1 to 160 characters.");
+  if (input.options !== undefined && !Array.isArray(input.options)) {
+    throw new TypeError("options must be an array when provided.");
+  }
+  const options = input.options === undefined ? TERRAIN_NAMES : [...new Set(input.options)];
+  if (options.length < 2 || options.length > 4 || options.length !== (input.options?.length || options.length)) {
+    throw new RangeError("options must contain 2 to 4 unique terrain values.");
+  }
   options.forEach(assertTerrain);
   state.focus = { id: `question-${state.humanObservations.length + 1}`, row, column, note, options, status: "pending" };
   addActivity(state, "focus", `Remote surveyor requested mission-control judgment at ${columnLetter(column)}${row}.`, note);

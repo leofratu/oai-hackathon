@@ -98,13 +98,17 @@ test("trace projections stay concise and allowlisted", () => {
   );
 });
 
-test("native registration exposes every definition and reports WebMCP status", async () => {
+test("registration contract exposes every definition and reports WebMCP status", async () => {
   const registered = [];
+  const signals = [];
   const statuses = [];
   const previousDocument = globalThis.document;
   globalThis.document = {
     modelContext: {
-      registerTool: async (definition) => registered.push(definition.name),
+      registerTool: async (definition, options) => {
+        registered.push(definition.name);
+        signals.push(options.signal);
+      },
     },
   };
 
@@ -114,8 +118,60 @@ test("native registration exposes every definition and reports WebMCP status", a
     const connected = await registerWebMCP(definitions, (status) => statuses.push(status));
     assert.equal(connected, true);
     assert.equal(registered.length, 6);
+    assert.ok(signals.every((signal) => signal instanceof AbortSignal && !signal.aborted));
     assert.deepEqual(statuses, [{ state: "ready", message: "WebMCP live / 6 tools" }]);
   } finally {
     globalThis.document = previousDocument;
+  }
+});
+
+test("registration aborts partial tools after a failure", async () => {
+  const statuses = [];
+  const signals = [];
+  const previousDocument = globalThis.document;
+  const previousConsoleError = console.error;
+  console.error = () => {};
+  globalThis.document = {
+    modelContext: {
+      registerTool: async (definition, options) => {
+        signals.push(options.signal);
+        if (definition.name === "inspect_chart") throw new Error("invalid schema");
+      },
+    },
+  };
+
+  try {
+    const handlers = createToolHandlers(() => createGame("registration-failure"), () => {});
+    const connected = await registerWebMCP(buildToolDefinitions(handlers), (status) => statuses.push(status));
+    assert.equal(connected, false);
+    assert.ok(signals.length > 0);
+    assert.ok(signals.every((signal) => signal.aborted));
+    assert.deepEqual(statuses, [{ state: "error", message: "WebMCP registration failed" }]);
+  } finally {
+    globalThis.document = previousDocument;
+    console.error = previousConsoleError;
+  }
+});
+
+test("render failures do not turn completed mutations into failed tool calls", async () => {
+  const state = createGame("render-isolation");
+  const events = [];
+  const previousConsoleError = console.error;
+  console.error = () => {};
+  const handlers = createToolHandlers(
+    () => state,
+    () => {
+      throw new Error("render failed");
+    },
+    (event) => events.push(event),
+  );
+
+  try {
+    const result = await handlers.survey_region({ row: 6, column: 6 });
+    assert.equal(result.ok, true);
+    assert.equal(state.surveysRemaining, 6);
+    assert.equal(events[0].status, "success");
+  } finally {
+    console.error = previousConsoleError;
   }
 });

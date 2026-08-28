@@ -54,6 +54,7 @@ test("survey spends one charge and returns bounded exact transects", () => {
 test("survey validates coordinates and cannot exceed its budget", () => {
   const game = createGame("budget-test");
   assert.throws(() => surveyRegion(game, { row: 0, column: 4 }), /row must be/);
+  assert.throws(() => surveyRegion(game, { row: "6", column: 4 }), /row must be/);
 
   for (let index = 0; index < SURVEY_LIMIT; index += 1) {
     surveyRegion(game, { row: 1 + index, column: 6, radius: 1 });
@@ -148,6 +149,39 @@ test("proposal input is narrow and deduplicates repeated coordinates", () => {
       }),
     /terrain must be one of/,
   );
+  assert.throws(
+    () => proposeChartPatch(game, { cells: [{ row: 2, column: 2, terrain: "forest" }] }),
+    /rationale must be a string/,
+  );
+});
+
+test("proposal provenance must match completed surveys or human answers", () => {
+  const game = createGame("provenance-test");
+  const surveyed = surveyRegion(game, { row: 6, column: 6 });
+  const exact = surveyed.rowTransect[0];
+
+  assert.throws(
+    () =>
+      proposeChartPatch(game, {
+        cells: [{ row: 1, column: 1, terrain: "water", confidence: 1, basis: "exact" }],
+        rationale: "Invented exact evidence.",
+      }),
+    /does not match a completed survey/,
+  );
+  const exactProposal = proposeChartPatch(game, {
+    cells: [{ ...exact, confidence: 1, basis: "exact" }],
+    rationale: "Verified survey evidence.",
+  });
+  assert.equal(exactProposal.stagedCells, 1);
+
+  focusHumanAttention(game, { row: 8, column: 8, note: "What terrain do you see?", options: ["water", "forest"] });
+  answerHumanFocus(game, "forest", 0.68);
+  const humanProposal = proposeChartPatch(game, {
+    cells: [{ row: 8, column: 8, terrain: "forest", confidence: 0.99, basis: "human-reading" }],
+    rationale: "Use the authorized human reading.",
+  });
+  const staged = game.proposals.find((proposal) => proposal.id === humanProposal.proposalId);
+  assert.equal(staged.cells[0].confidence, 0.68);
 });
 
 test("compass consultations are bounded and never expose exact correctness before reveal", () => {
@@ -175,6 +209,14 @@ test("human field readings form a structured handoff back to the agent", () => {
   assert.equal(answer.observation.terrain, "forest");
   assert.equal(inspectChart(game).humanObservations.length, 1);
   assert.equal(game.focus, null);
+  assert.throws(
+    () => focusHumanAttention(game, { row: 5, column: 5, note: "", options: ["water", "forest"] }),
+    /note must contain/,
+  );
+  assert.throws(
+    () => focusHumanAttention(game, { row: 5, column: 5, note: "Choose", options: ["water", "water"] }),
+    /unique terrain values/,
+  );
 });
 
 test("agent state withholds the seed and exact live precision", () => {
@@ -189,7 +231,7 @@ test("proposal queue is bounded and acceptance rechecks live conflicts", () => {
   const game = createGame("queue-test");
   for (let index = 0; index < MAX_PENDING_PROPOSALS; index += 1) {
     proposeChartPatch(game, {
-      cells: [{ row: 1, column: index + 1, terrain: "water", confidence: 0.9, basis: "exact" }],
+      cells: [{ row: 1, column: index + 1, terrain: "water", confidence: 0.9, basis: "inferred" }],
       rationale: `Patch ${index + 1}`,
     });
   }
