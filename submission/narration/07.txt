@@ -1,0 +1,1 @@
+A safety check costs one of two consultations. It returns a broad precision band without identifying correct cells or mistakes. This keeps the check useful without turning it into an answer oracle.

@@ -54,7 +54,7 @@ Voiceover: "Later turns repeat the same review loop. Exact scans cover 60 unique
 
 Picture: Select **Transmit chart**. Hold on the winning score, then show the live URL and repository URL.
 
-Voiceover: "This run finishes at 50 percent coverage and 93 percent precision. The live app and full source are ready for judge testing."
+Voiceover: "This run reaches the coverage and precision targets. The live app and full source are ready for judge testing."
 
 ## Production notes
 

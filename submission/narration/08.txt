@@ -1,0 +1,1 @@
+Later turns repeat the same review loop. Seven scans cover 60 unique cells. Human readings and manual chart decisions fill the remaining gaps while the trace keeps each source visible.

@@ -1,0 +1,1 @@
+This run finishes at 50 percent coverage and 90 percent precision. The live app and public source are ready. Native Site tools capture is the last submission check.

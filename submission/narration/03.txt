@@ -1,0 +1,1 @@
+For this review cut, I use the labeled local replay. It invokes the same production handlers while marking every event as local replay. The first calls read the objective, budgets, committed chart, and previous handoffs.

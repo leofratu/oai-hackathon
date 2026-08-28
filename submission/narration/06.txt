@@ -1,0 +1,1 @@
+For an uncertain diagonal, the agent requests human attention at one coordinate. I interpret the field layer and send a structured answer. Inspect chart gives that authorized answer back to the agent, so the handoff becomes part of the shared state.
