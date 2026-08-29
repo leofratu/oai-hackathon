@@ -6,9 +6,11 @@ import {
   confirmHumanLabel,
   createTrainingSession,
   evaluateModel,
+  inspectModelDiagnostics,
   inspectTrainingHistory,
   inspectUncertainSamples,
   predictText,
+  predictTicket,
   proposeModelConfig,
   queueLabelReview,
   resolveConfigProposal,
@@ -89,4 +91,22 @@ test("agent state and history expose metrics without holdout answers", () => {
   assert.equal(JSON.stringify(publicState).includes("groundTruth"), false);
   assert.equal(JSON.stringify(history).includes("groundTruth"), false);
   assert.equal(JSON.stringify(history).includes("card statement"), false);
+});
+
+test("prediction and model diagnostics expose real learned behavior", () => {
+  const state = createTrainingSession();
+  const prediction = predictTicket(state, { text: "The export crashes after I press download" });
+  assert.equal(prediction.ok, true);
+  assert.ok(LABELS.includes(prediction.label));
+  assert.ok(["human_review", "route_prediction"].includes(prediction.decision));
+  const diagnostics = inspectModelDiagnostics(state, { featureLimit: 4 });
+  assert.equal(diagnostics.vocabularySize, 57);
+  assert.deepEqual(Object.keys(diagnostics.topFeatures), LABELS);
+  assert.ok(LABELS.every((label) => diagnostics.topFeatures[label].length === 4));
+  assert.equal(
+    Object.values(diagnostics.confusionMatrix).flatMap(Object.values).reduce((sum, count) => sum + count, 0),
+    9,
+  );
+  assert.equal(JSON.stringify(diagnostics).includes("card statement"), false);
+  assert.throws(() => predictTicket(state, { text: "x" }), /3 to 300/);
 });

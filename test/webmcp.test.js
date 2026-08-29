@@ -10,7 +10,7 @@ import {
   summarizeToolEvent,
 } from "../src/webmcp.js";
 
-test("all seven handlers emit compact read and write trace events", async () => {
+test("all nine handlers emit compact read and write trace events", async () => {
   const state = createTrainingSession();
   const events = [];
   let changes = 0;
@@ -24,6 +24,8 @@ test("all seven handlers emit compact read and write trace events", async () => 
   await handlers.evaluate_model();
   await handlers.propose_model_config({ alpha: 0.8, reviewThreshold: 0.78, rationale: "Test staged settings." });
   await handlers.inspect_training_history();
+  await handlers.predict_ticket({ text: "The export button crashes" });
+  await handlers.inspect_model_diagnostics({ featureLimit: 4 });
 
   assert.deepEqual(events.map(({ name, access, status }) => ({ name, access, status })), [
     { name: "get_training_state", access: "read", status: "success" },
@@ -33,6 +35,8 @@ test("all seven handlers emit compact read and write trace events", async () => 
     { name: "evaluate_model", access: "read", status: "success" },
     { name: "propose_model_config", access: "write", status: "success" },
     { name: "inspect_training_history", access: "read", status: "success" },
+    { name: "predict_ticket", access: "read", status: "success" },
+    { name: "inspect_model_diagnostics", access: "read", status: "success" },
   ]);
   assert.equal(changes, 3);
   assert.equal(JSON.stringify(events).includes("groundTruth"), false);
@@ -78,9 +82,9 @@ test("registration exposes all definitions and reports native status", async () 
     const handlers = createToolHandlers(() => createTrainingSession(), () => {});
     const connected = await registerWebMCP(buildToolDefinitions(handlers), (status) => statuses.push(status));
     assert.equal(connected, true);
-    assert.equal(registered.length, 7);
+    assert.equal(registered.length, 9);
     assert.ok(signals.every((signal) => signal instanceof AbortSignal && !signal.aborted));
-    assert.deepEqual(statuses, [{ state: "ready", message: "WebMCP live / 7 tools" }]);
+    assert.deepEqual(statuses, [{ state: "ready", message: "WebMCP live / 9 tools" }]);
   } finally {
     globalThis.document = previousDocument;
   }

@@ -1,7 +1,9 @@
 import {
   evaluateModel,
+  inspectModelDiagnostics,
   inspectTrainingHistory,
   inspectUncertainSamples,
+  predictTicket,
   proposeModelConfig,
   queueLabelReview,
   trainConfirmedBatch,
@@ -27,6 +29,10 @@ export function summarizeToolEvent({ name, result, error }) {
       return `alpha ${result.proposal.alpha} / awaiting human approval`;
     case "inspect_training_history":
       return `${result.history.length} checkpoints / ${result.trainedSamples.length} human labels trained`;
+    case "predict_ticket":
+      return `${result.label} / ${Math.round(result.confidence * 100)}% / ${result.decision}`;
+    case "inspect_model_diagnostics":
+      return `${result.vocabularySize} features / confidence gap ${Math.round(result.calibration.confidenceGap * 100)} points`;
     default:
       return "Tool completed";
   }
@@ -37,6 +43,8 @@ export function formatToolInput(name, input = {}) {
   if (name === "queue_label_review") return `{ samples: ${input.sampleIds?.length || 0}, note: ... }`;
   if (name === "train_confirmed_batch") return `{ maximum: ${input.maximum ?? 3} }`;
   if (name === "propose_model_config") return `{ alpha: ${input.alpha}, threshold: ${input.reviewThreshold} }`;
+  if (name === "predict_ticket") return `{ text: ${JSON.stringify(input.text || "").slice(0, 54)} }`;
+  if (name === "inspect_model_diagnostics") return `{ featureLimit: ${input.featureLimit ?? 6} }`;
   return "{}";
 }
 
@@ -84,6 +92,9 @@ export function createToolHandlers(getState, onChange, onToolEvent = () => {}) {
     propose_model_config: async (input) =>
       invoke("propose_model_config", input, (state) => proposeModelConfig(state, input), true),
     inspect_training_history: async (input = {}) => invoke("inspect_training_history", input, inspectTrainingHistory),
+    predict_ticket: async (input) => invoke("predict_ticket", input, (state) => predictTicket(state, input)),
+    inspect_model_diagnostics: async (input = {}) =>
+      invoke("inspect_model_diagnostics", input, (state) => inspectModelDiagnostics(state, input)),
   };
 }
 
@@ -187,6 +198,37 @@ export function buildToolDefinitions(handlers) {
       inputSchema: emptySchema,
       annotations: { readOnlyHint: true },
       execute: handlers.inspect_training_history,
+    },
+    {
+      name: "predict_ticket",
+      title: "Run model inference",
+      description:
+        "Classify new support-ticket text with the current in-browser model. Returns probabilities, normalized entropy, the approved review threshold, and a route-or-review decision.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          text: { type: "string", minLength: 3, maxLength: 300, description: "Support-ticket text to classify." },
+        },
+        required: ["text"],
+        additionalProperties: false,
+      },
+      annotations: { readOnlyHint: true },
+      execute: handlers.predict_ticket,
+    },
+    {
+      name: "inspect_model_diagnostics",
+      title: "Inspect learned model diagnostics",
+      description:
+        "Return one-vs-rest feature weights, aggregate confusion counts, calibration gap, and log loss for the current model without exposing individual holdout rows.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          featureLimit: { type: "integer", minimum: 3, maximum: 10, description: "Top learned tokens per class." },
+        },
+        additionalProperties: false,
+      },
+      annotations: { readOnlyHint: true },
+      execute: handlers.inspect_model_diagnostics,
     },
   ];
 }

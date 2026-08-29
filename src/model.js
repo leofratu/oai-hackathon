@@ -128,8 +128,12 @@ export function evaluateModel(state) {
   const byLabel = Object.fromEntries(
     LABELS.map((label) => [label, { truePositive: 0, falsePositive: 0, falseNegative: 0 }]),
   );
+  const confusionMatrix = Object.fromEntries(
+    LABELS.map((actual) => [actual, Object.fromEntries(LABELS.map((predicted) => [predicted, 0]))]),
+  );
   for (const example of HOLDOUT_EXAMPLES) {
     const prediction = predictText(state, example.text);
+    confusionMatrix[example.label][prediction.label] += 1;
     const isCorrect = prediction.label === example.label;
     if (isCorrect) correct += 1;
     confidenceTotal += prediction.confidence;
@@ -154,6 +158,70 @@ export function evaluateModel(state) {
     averageConfidence: confidenceTotal / HOLDOUT_EXAMPLES.length,
     logLoss: logLossTotal / HOLDOUT_EXAMPLES.length,
     perLabel,
+    confusionMatrix,
+  };
+}
+
+export function predictTicket(state, input) {
+  const text = input?.text;
+  if (typeof text !== "string" || text.trim().length < 3 || text.trim().length > 300) {
+    throw new RangeError("text must contain 3 to 300 characters.");
+  }
+  const prediction = predictText(state, text.trim());
+  return {
+    ok: true,
+    text: text.trim(),
+    ...prediction,
+    decision: prediction.requiresReview ? "human_review" : "route_prediction",
+    reviewThreshold: state.config.reviewThreshold,
+  };
+}
+
+function topFeaturesForLabel(state, label, limit) {
+  const vocabulary = Object.keys(state.model.vocabulary);
+  const vocabularySize = Math.max(1, vocabulary.length);
+  const alpha = state.config.alpha;
+  return vocabulary
+    .map((token) => {
+      const labelProbability = ((state.model.tokenCounts[label][token] || 0) + alpha)
+        / (state.model.tokenTotals[label] + alpha * vocabularySize);
+      const otherScores = LABELS
+        .filter((candidate) => candidate !== label)
+        .map((candidate) => Math.log(
+          ((state.model.tokenCounts[candidate][token] || 0) + alpha)
+          / (state.model.tokenTotals[candidate] + alpha * vocabularySize),
+        ));
+      const weight = Math.log(labelProbability)
+        - otherScores.reduce((sum, score) => sum + score, 0) / otherScores.length;
+      return { token, weight };
+    })
+    .filter((feature) => feature.weight > 0)
+    .sort((left, right) => right.weight - left.weight || left.token.localeCompare(right.token))
+    .slice(0, limit);
+}
+
+export function inspectModelDiagnostics(state, input = {}) {
+  const featureLimit = input.featureLimit === undefined ? 6 : input.featureLimit;
+  if (!Number.isInteger(featureLimit) || featureLimit < 3 || featureLimit > 10) {
+    throw new RangeError("featureLimit must be an integer from 3 to 10.");
+  }
+  const metrics = evaluateModel(state);
+  return {
+    ok: true,
+    modelFamily: "online multinomial Naive Bayes",
+    examplesSeen: state.model.examplesSeen,
+    vocabularySize: Object.keys(state.model.vocabulary).length,
+    topFeatures: Object.fromEntries(
+      LABELS.map((label) => [label, topFeaturesForLabel(state, label, featureLimit)]),
+    ),
+    confusionMatrix: metrics.confusionMatrix,
+    calibration: {
+      averageConfidence: metrics.averageConfidence,
+      accuracy: metrics.accuracy,
+      confidenceGap: metrics.averageConfidence - metrics.accuracy,
+      logLoss: metrics.logLoss,
+    },
+    note: "Feature weights are one-vs-rest log-likelihood differences. Confusion counts are aggregate holdout results.",
   };
 }
 

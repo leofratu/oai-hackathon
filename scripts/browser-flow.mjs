@@ -26,17 +26,38 @@ await page.addInitScript(() => {
 
 try {
   await page.goto(origin, { waitUntil: "networkidle" });
-  await page.getByText("WebMCP live / 7 tools").waitFor();
+  await page.getByText("WebMCP live / 9 tools").waitFor();
   const toolNames = await page.evaluate(async () => (await document.modelContext.getTools()).map((tool) => tool.name));
   assert.deepEqual(toolNames, [
     "evaluate_model",
     "get_training_state",
+    "inspect_model_diagnostics",
     "inspect_training_history",
     "inspect_uncertain_samples",
+    "predict_ticket",
     "propose_model_config",
     "queue_label_review",
     "train_confirmed_batch",
   ]);
+
+  const diagnostics = await page.evaluate(async () => {
+    const tools = await document.modelContext.getTools();
+    return document.modelContext.executeTool(
+      tools.find((tool) => tool.name === "inspect_model_diagnostics"),
+      JSON.stringify({ featureLimit: 4 }),
+    );
+  });
+  assert.equal(diagnostics.vocabularySize, 57);
+  assert.equal(JSON.stringify(diagnostics).includes("card statement"), false);
+
+  const prediction = await page.evaluate(async () => {
+    const tools = await document.modelContext.getTools();
+    return document.modelContext.executeTool(
+      tools.find((tool) => tool.name === "predict_ticket"),
+      JSON.stringify({ text: "The export button crashes" }),
+    );
+  });
+  assert.ok(["human_review", "route_prediction"].includes(prediction.decision));
 
   const trainingState = await page.evaluate(async () => {
     const tools = await document.modelContext.getTools();
@@ -100,7 +121,7 @@ try {
   assert.ok(localOrigins.every((source) => source === "local replay"));
   await fallbackPage.close();
 
-  console.log("Browser flow passed: seven tools, uncertainty ranking, human labels, incremental training, metrics, and config approval.");
+  console.log("Browser flow passed: nine tools, diagnostics, inference, uncertainty ranking, human labels, training, metrics, and config approval.");
 } finally {
   await browser.close();
   await server.close();

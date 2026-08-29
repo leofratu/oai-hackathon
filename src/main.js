@@ -3,9 +3,10 @@ import {
   confirmHumanLabel,
   createTrainingSession,
   evaluateModel,
+  inspectModelDiagnostics,
   inspectTrainingHistory,
   inspectUncertainSamples,
-  predictText,
+  predictTicket,
   resolveConfigProposal,
 } from "./model.js";
 import {
@@ -18,7 +19,7 @@ import {
 
 const elements = Object.fromEntries([
   "accuracyValue", "activityList", "alphaValue", "checkpointValue", "classMetrics", "configProposal",
-  "emptyReview", "examplesSeen", "f1Value", "heroNote", "historyCaption", "historyChart", "pendingLabelCount",
+  "confusionGrid", "calibrationStats", "emptyReview", "examplesSeen", "f1Value", "featureGrid", "heroNote", "historyCaption", "historyChart", "pendingLabelCount",
   "poolCount", "predictionOutput", "promptFeedback", "proofState", "queueValue", "replayButton", "reviewQueue",
   "sampleList", "thresholdValue", "ticketInput", "toast", "traceCount", "traceList", "vocabValue", "webmcpStatus",
 ].map((id) => [id, document.querySelector(`#${id}`)]));
@@ -50,7 +51,7 @@ function setSiteToolStatus({ state: status, message }) {
       ? "This browser has no native WebMCP. Local replay calls the production handlers and labels every event."
       : "WebMCP registration did not complete. The local replay remains available.";
   document.querySelector("#runtimeProof").innerHTML = status === "ready"
-    ? "Native <code>document.modelContext</code> registered all seven tools."
+    ? "Native <code>document.modelContext</code> registered all nine tools."
     : "Open this URL in ChatGPT's browser or Chrome with WebMCP testing enabled for native tools.";
 }
 
@@ -270,10 +271,83 @@ function renderActivity() {
   elements.activityList.replaceChildren(...items);
 }
 
+function renderDiagnostics() {
+  const diagnostics = inspectModelDiagnostics(state, { featureLimit: 5 });
+  const featureGroups = LABELS.map((label) => {
+    const section = document.createElement("section");
+    section.className = "feature-group";
+    section.dataset.label = label;
+    const heading = document.createElement("strong");
+    heading.textContent = label;
+    const maximum = Math.max(...diagnostics.topFeatures[label].map((feature) => feature.weight), 1);
+    const list = document.createElement("div");
+    list.className = "feature-list";
+    for (const feature of diagnostics.topFeatures[label]) {
+      const row = document.createElement("div");
+      const token = document.createElement("code");
+      token.textContent = feature.token;
+      const bar = document.createElement("span");
+      const fill = document.createElement("i");
+      fill.style.width = percent(feature.weight / maximum);
+      bar.append(fill);
+      const weight = document.createElement("small");
+      weight.textContent = feature.weight.toFixed(2);
+      row.append(token, bar, weight);
+      list.append(row);
+    }
+    section.append(heading, list);
+    return section;
+  });
+  elements.featureGrid.replaceChildren(...featureGroups);
+
+  const matrixCells = [];
+  const corner = document.createElement("span");
+  corner.className = "matrix-axis";
+  corner.textContent = "A / P";
+  matrixCells.push(corner);
+  for (const label of LABELS) {
+    const header = document.createElement("strong");
+    header.textContent = label;
+    matrixCells.push(header);
+  }
+  for (const actual of LABELS) {
+    const rowLabel = document.createElement("strong");
+    rowLabel.textContent = actual;
+    matrixCells.push(rowLabel);
+    for (const predicted of LABELS) {
+      const cell = document.createElement("span");
+      const count = diagnostics.confusionMatrix[actual][predicted];
+      cell.textContent = count;
+      cell.dataset.correct = String(actual === predicted);
+      cell.style.setProperty("--matrix-strength", String(Math.max(0.08, count / 3)));
+      matrixCells.push(cell);
+    }
+  }
+  elements.confusionGrid.replaceChildren(...matrixCells);
+
+  const calibration = diagnostics.calibration;
+  const values = [
+    ["Accuracy", percent(calibration.accuracy)],
+    ["Mean confidence", percent(calibration.averageConfidence)],
+    ["Confidence gap", `${(calibration.confidenceGap * 100).toFixed(1)} pts`],
+    ["Log loss", calibration.logLoss.toFixed(3)],
+  ];
+  elements.calibrationStats.replaceChildren(...values.map(([label, value]) => {
+    const item = document.createElement("div");
+    const name = document.createElement("span");
+    name.textContent = label;
+    const result = document.createElement("strong");
+    result.textContent = value;
+    item.append(name, result);
+    return item;
+  }));
+}
+
 function render() {
   renderMetrics();
   renderSamples();
   renderHumanQueue();
+  renderDiagnostics();
   renderTrace();
   renderActivity();
 }
@@ -324,7 +398,7 @@ async function runLocalReplay() {
 }
 
 async function copyPrompt() {
-  const prompt = `Open Label Loop and act as the training agent. First call get_training_state, then inspect_uncertain_samples. Queue at most two high-entropy samples with queue_label_review and wait for me to label them. After I finish, call train_confirmed_batch, evaluate_model, and inspect_training_history. You may propose model settings, but never claim that a label or configuration was approved until the page reports it.`;
+  const prompt = `Open Label Loop and act as the training agent. First call get_training_state, inspect_model_diagnostics, then inspect_uncertain_samples. Queue at most two high-entropy samples with queue_label_review and wait for me to label them. After I finish, call train_confirmed_batch, evaluate_model, and inspect_training_history. Use predict_ticket to test one new example. You may propose model settings, but never claim that a label or configuration was approved until the page reports it.`;
   try {
     await navigator.clipboard.writeText(prompt);
     elements.promptFeedback.textContent = "Task copied. Paste it into ChatGPT beside this live page.";
@@ -352,7 +426,7 @@ document.querySelector("#resetButton").addEventListener("click", () => {
 });
 document.querySelector("#tryModelForm").addEventListener("submit", (event) => {
   event.preventDefault();
-  const prediction = predictText(state, elements.ticketInput.value);
+  const prediction = predictTicket(state, { text: elements.ticketInput.value });
   const decision = prediction.requiresReview ? "send to human review" : "safe to route";
   elements.predictionOutput.textContent = `${prediction.label} / ${percent(prediction.confidence)} confidence / ${decision} / entropy ${prediction.entropy.toFixed(2)}`;
 });
