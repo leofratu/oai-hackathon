@@ -3,310 +3,151 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Seven Transects is a WebMCP rescue-mapping game where a person and browser agent must chart a safe coast together."
-    />
-    <meta name="theme-color" content="#102a2b" />
-    <link rel="icon" href="/seven-transects-mark.svg" type="image/svg+xml" />
+    <meta name="description" content="Train an online text classifier with human labels and a WebMCP browser agent." />
+    <meta name="theme-color" content="#071116" />
+    <link rel="icon" href="/label-loop-mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/src/styles.css" />
-    <title>Seven Transects: audit an agent under uncertainty</title>
+    <title>Label Loop: online model training through WebMCP</title>
   </head>
   <body>
     <div class="shell">
       <header class="masthead">
-        <a class="brand" href="#top" aria-label="Seven Transects home">
-          <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
-            <path d="M7 31c7-17 20-22 34-13-4 1-7 4-9 8 3 0 6 1 9 4-12-2-22 2-29 11-3-3-5-6-5-10Z" />
-            <path d="M8 17c8-8 18-10 29-5" />
-          </svg>
-          <span>
-            <strong>Seven Transects</strong>
-            <small>Rescue cartography protocol</small>
-          </span>
+        <a class="brand" href="#top" aria-label="Label Loop home">
+          <span class="brand-mark" aria-hidden="true">LL</span>
+          <span><strong>Label Loop</strong><small>Online training console</small></span>
         </a>
         <div class="webmcp-status" id="webmcpStatus" data-state="checking">
-          <span class="status-dot" aria-hidden="true"></span>
-          <span>Checking site tools...</span>
+          <span class="status-dot" aria-hidden="true"></span><span>Checking site tools...</span>
         </div>
       </header>
 
       <main id="top">
         <section class="hero" aria-labelledby="heroTitle">
           <div class="hero-copy">
-            <div class="eyebrow"><span class="live-pulse" aria-hidden="true"></span> Playable WebMCP training mission</div>
-            <h1 id="heroTitle">Map the island with an agent you can audit.</h1>
-            <p>
-              The agent has seven exact scans. You see a noisy field layer and approve every chart
-              change. Reach 72 correct cells at 88% precision while the WebMCP trace records each
-              read, write, proposal, and human handoff.
+            <p class="eyebrow"><span></span> In-browser machine learning / WebMCP</p>
+            <h1 id="heroTitle">Train a live classifier with your browser agent.</h1>
+            <p class="hero-lede">
+              A multinomial Naive Bayes model learns incrementally from human-confirmed support tickets.
+              The agent finds uncertain samples, requests labels, starts bounded training steps, and reports
+              metrics through seven page tools.
             </p>
             <div class="hero-actions">
-              <button class="button button-primary" id="copyPromptButton" type="button">
-                Copy ChatGPT mission
-              </button>
-              <button class="button button-quiet" id="demoTurnButton" type="button">
-                Run local tool replay
-              </button>
+              <button class="button button-primary" id="copyPromptButton" type="button">Copy ChatGPT task</button>
+              <button class="button button-secondary" id="replayButton" type="button">Run local tool replay</button>
             </div>
-            <p class="hero-demo-note" id="heroDemoNote">Checking for native WebMCP before starting...</p>
+            <p class="hero-note" id="heroNote">Checking for native WebMCP...</p>
             <p class="prompt-feedback" id="promptFeedback" role="status" aria-live="polite"></p>
-            <dl class="mission-readouts" aria-label="Mission constraints">
-              <div><dt>Scan windows</dt><dd>07</dd></div>
-              <div><dt>Chart required</dt><dd>50%</dd></div>
-              <div><dt>Safe precision</dt><dd>88%</dd></div>
-            </dl>
           </div>
 
-          <aside class="protocol-primer" aria-labelledby="protocolPrimerTitle">
-            <div class="protocol-primer-status">
-              <span>Mission link / WebMCP</span>
-              <span id="protocolLinkState">Checking</span>
+          <aside class="webmcp-proof" aria-labelledby="proofTitle">
+            <div class="proof-topline"><span>Registered on this page</span><strong id="proofState">Checking</strong></div>
+            <h2 id="proofTitle">The agent gets a training API, not a pile of buttons.</h2>
+            <div class="tool-manifest" aria-label="Seven WebMCP page tools">
+              <code>get_training_state</code>
+              <code>inspect_uncertain_samples</code>
+              <code>queue_label_review</code>
+              <code>train_confirmed_batch</code>
+              <code>evaluate_model</code>
+              <code>propose_model_config</code>
+              <code>inspect_training_history</code>
             </div>
-            <h2 id="protocolPrimerTitle">Six page tools connect both roles.</h2>
-            <p class="protocol-primer-lede">The agent receives structured evidence instead of reading 144 grid buttons. Proposed changes remain pending until you review them.</p>
-            <div class="tool-manifest" aria-label="WebMCP tools registered by this page">
-              <div class="tool-manifest-heading"><span id="toolManifestHeading">Tool contract declared here</span><code>6 registerTool calls</code></div>
-              <div class="tool-manifest-list">
-                <code>get_expedition_state</code><code>survey_region</code><code>inspect_chart</code>
-                <code>propose_chart_patch</code><code>focus_human_attention</code><code>consult_compass</code>
-              </div>
-            </div>
-            <p class="runtime-proof" id="runtimeProof">Checking whether this browser exposes native WebMCP...</p>
-            <ol class="protocol-flow">
-              <li>
-                <span>01</span>
-                <div><strong>Agent calls a page tool</strong><p><code>survey_region</code> spends a scan and returns exact cells.</p></div>
-              </li>
-              <li>
-                <span>02</span>
-                <div><strong>The page updates</strong><p>The typed result changes this same visible chart.</p></div>
-              </li>
-              <li>
-                <span>03</span>
-                <div><strong>You decide what commits</strong><p>Approve a patch, reject it, or send a field reading back.</p></div>
-              </li>
-            </ol>
-            <div class="protocol-dependency">
-              <strong>Why WebMCP is required</strong>
-              <span>The agent discovers bounded actions, receives typed evidence, and changes the live page without guessing at UI controls.</span>
-            </div>
+            <p id="runtimeProof">Checking whether this browser exposes <code>document.modelContext</code>.</p>
           </aside>
         </section>
 
-        <section class="role-band" aria-label="Human and agent roles">
-          <article class="role-card role-agent">
-            <span>Remote surveyor / agent</span>
-            <strong>The agent finds evidence and proposes marks.</strong>
-            <p>Finds typed tools, spends scarce scans, reasons over evidence, and stages reversible patches.</p>
+        <section class="loop-strip" aria-label="Online learning sequence">
+          <article><span>01</span><strong>Inspect</strong><p>The agent ranks unlabeled tickets by predictive entropy.</p></article>
+          <article><span>02</span><strong>Review</strong><p>A person assigns the authoritative billing, bug, or access label.</p></article>
+          <article><span>03</span><strong>Train</strong><p>The browser updates token counts without a server or model API.</p></article>
+          <article><span>04</span><strong>Evaluate</strong><p>Accuracy, macro F1, confidence, and log loss update on a hidden holdout.</p></article>
+        </section>
+
+        <section class="metrics" aria-label="Current model metrics">
+          <article><span>Training examples</span><strong id="examplesSeen">9</strong><small>incremental labels</small></article>
+          <article><span>Holdout accuracy</span><strong id="accuracyValue">0%</strong><small>9 fixed samples</small></article>
+          <article><span>Macro F1</span><strong id="f1Value">0%</strong><small>balanced across classes</small></article>
+          <article><span>Review queue</span><strong id="queueValue">0</strong><small>maximum 3 at once</small></article>
+        </section>
+
+        <section class="workspace" aria-label="Online model training workspace">
+          <article class="panel model-panel">
+            <header class="panel-header">
+              <div><span class="kicker">Model core</span><h2>Online Naive Bayes</h2></div>
+              <span class="model-chip">client-side</span>
+            </header>
+            <div class="config-grid">
+              <div><span>Laplace alpha</span><strong id="alphaValue">1.00</strong></div>
+              <div><span>Vocabulary</span><strong id="vocabValue">0</strong></div>
+              <div><span>Review threshold</span><strong id="thresholdValue">72%</strong></div>
+              <div><span>Checkpoints</span><strong id="checkpointValue">1</strong></div>
+            </div>
+            <div class="class-metrics" id="classMetrics" aria-label="Per-class F1 scores"></div>
+            <div class="history-block">
+              <div class="section-label"><span>Accuracy history</span><small id="historyCaption">seed model</small></div>
+              <svg id="historyChart" viewBox="0 0 520 150" role="img" aria-label="Accuracy after each online training step"></svg>
+            </div>
+            <form class="try-model" id="tryModelForm">
+              <label for="ticketInput">Try the current classifier</label>
+              <textarea id="ticketInput" rows="3">My password reset email never arrived</textarea>
+              <button class="button button-secondary" type="submit">Classify text</button>
+              <div class="prediction-output" id="predictionOutput" aria-live="polite"></div>
+            </form>
           </article>
-          <div class="mission-link" aria-label="Current collaboration status">
-            <span class="mission-link-line" aria-hidden="true"></span>
-            <small id="missionLinkLabel">Checking WebMCP state</small>
-            <strong id="missionPhase">Awaiting dispatch</strong>
-            <span class="mission-link-line" aria-hidden="true"></span>
-          </div>
-          <article class="role-card role-human">
-            <span>Mission control / you</span>
-            <strong>You see the field layer and approve marks.</strong>
-            <p>Interprets the noisy spectral layer, answers uncertainty, and controls every committed cell.</p>
+
+          <article class="panel samples-panel">
+            <header class="panel-header">
+              <div><span class="kicker">Acquisition queue</span><h2>Uncertain samples</h2></div>
+              <span class="model-chip" id="poolCount">12 unlabeled</span>
+            </header>
+            <p class="panel-intro">Entropy measures disagreement across the three class probabilities. Higher values are better candidates for a human label.</p>
+            <div class="sample-list" id="sampleList"></div>
+          </article>
+
+          <aside class="panel human-panel">
+            <header class="panel-header">
+              <div><span class="kicker">Human authority</span><h2>Label review</h2></div>
+              <span class="pending-chip" id="pendingLabelCount">0 waiting</span>
+            </header>
+            <div class="reviewQueue" id="reviewQueue"></div>
+            <section class="config-proposal" id="configProposal" hidden></section>
+            <div class="empty-review" id="emptyReview">
+              <span>Queue empty</span>
+              <p>Ask the agent to inspect uncertainty and request the samples that would add the most information.</p>
+            </div>
+          </aside>
+        </section>
+
+        <section class="lower-grid">
+          <article class="panel trace-panel">
+            <header class="panel-header">
+              <div><span class="kicker">Shared protocol</span><h2>WebMCP call trace</h2></div>
+              <span class="model-chip" id="traceCount">0 calls</span>
+            </header>
+            <p class="panel-intro">Every read and write is recorded with its source. Local replay is labeled and never presented as an external agent.</p>
+            <div class="trace-list" id="traceList" aria-live="polite"></div>
+          </article>
+
+          <article class="panel activity-panel">
+            <header class="panel-header">
+              <div><span class="kicker">Training ledger</span><h2>Human and model events</h2></div>
+              <button class="text-button" id="resetButton" type="button">Reset session</button>
+            </header>
+            <div class="activity-list" id="activityList" aria-live="polite"></div>
           </article>
         </section>
 
-        <section class="how-to" aria-labelledby="howToTitle">
-          <div class="how-to-heading">
-            <div>
-              <span class="eyebrow">New to the mission?</span>
-              <h2 id="howToTitle">One turn has three steps.</h2>
-            </div>
-            <span class="how-to-count">01 / 02 / 03</span>
+        <section class="why-webmcp">
+          <div><span class="eyebrow">Why WebMCP</span><h2>The page owns the model. The agent works through contracts.</h2></div>
+          <div class="why-copy">
+            <p><code>inspect_uncertain_samples</code> returns ranked candidates with probabilities and entropy. The agent does not scrape cards or infer control meaning from the layout.</p>
+            <p><code>queue_label_review</code> can request labels but cannot assign them. <code>train_confirmed_batch</code> rejects unreviewed predictions, and configuration changes remain pending until a person accepts them.</p>
           </div>
-          <div class="how-to-steps">
-            <article class="how-to-step">
-              <span>01</span>
-              <div><strong>Ask ChatGPT to scan</strong><p>Copy the mission prompt. In ChatGPT's browser, the agent discovers the six tools registered by this page.</p></div>
-            </article>
-            <article class="how-to-step">
-              <span>02</span>
-              <div><strong>Review the patch</strong><p>A scan spends one charge. Accept verified evidence, accept the full patch, or reject it.</p></div>
-            </article>
-            <article class="how-to-step">
-              <span>03</span>
-              <div><strong>Send a human reading</strong><p>Answer the pinned question. The agent reads your structured answer through <code>inspect_chart</code>.</p></div>
-            </article>
-          </div>
-        </section>
-
-        <section class="expedition" id="missionDeck" aria-label="Seven Transects rescue mapping workspace">
-          <aside class="panel mission-panel">
-            <div class="panel-heading">
-              <span class="panel-kicker">Mission control</span>
-              <h2>Landing brief</h2>
-            </div>
-
-            <dl class="mission-stats">
-              <div>
-                <dt>Signal windows</dt>
-                <dd><strong id="surveyCount">7</strong><span>/ 7</span></dd>
-              </div>
-              <div class="charge-pips" id="chargePips" aria-label="Seven survey charges"></div>
-              <div>
-                <dt>Coast charted</dt>
-                <dd><strong id="coverageValue">0</strong><span>%</span></dd>
-              </div>
-              <div>
-                <dt>Safety reading</dt>
-                <dd class="compass-reading"><strong id="accuracyValue">Unverified</strong><span id="accuracyUnit"></span></dd>
-              </div>
-            </dl>
-
-            <div class="objective">
-              <span class="objective-number">01</span>
-              <div>
-                <strong>Clear the landing window</strong>
-                <p>Color 72/144 squares correctly. Stay above 88% precision. Agent scans alone cannot finish.</p>
-              </div>
-            </div>
-
-            <div class="palette-wrap">
-              <span class="control-label">Mission-control pencil</span>
-              <div class="palette" id="palette" role="group" aria-label="Terrain pencil">
-                <button class="swatch is-selected" data-terrain="water" aria-pressed="true" type="button">
-                  <span class="terrain-chip terrain-water"></span>Water <kbd>1</kbd>
-                </button>
-                <button class="swatch" data-terrain="meadow" aria-pressed="false" type="button">
-                  <span class="terrain-chip terrain-meadow"></span>Meadow <kbd>2</kbd>
-                </button>
-                <button class="swatch" data-terrain="forest" aria-pressed="false" type="button">
-                  <span class="terrain-chip terrain-forest"></span>Forest <kbd>3</kbd>
-                </button>
-                <button class="swatch" data-terrain="ridge" aria-pressed="false" type="button">
-                  <span class="terrain-chip terrain-ridge"></span>Ridge <kbd>4</kbd>
-                </button>
-              </div>
-              <p class="microcopy">Click or drag to draw. Backspace erases a focused cell.</p>
-            </div>
-
-            <div class="seed-control">
-              <label for="seedInput">Operation callsign</label>
-              <div>
-                <input id="seedInput" maxlength="32" value="northstar" autocomplete="off" />
-                <button id="newExpeditionButton" type="button">New</button>
-              </div>
-            </div>
-          </aside>
-
-          <section class="map-panel" aria-labelledby="chartTitle">
-            <div class="map-toolbar">
-              <div>
-                <span class="panel-kicker">Live shared artifact</span>
-                <h2 id="chartTitle">Extraction chart</h2>
-              </div>
-              <div class="map-actions">
-                <button id="scoreButton" class="button button-small" type="button">Run safety check <span id="consultCount">2</span></button>
-                <button id="revealButton" class="button button-small button-dark" type="button">Transmit chart</button>
-              </div>
-            </div>
-
-            <div class="field-lens-callout">
-              <span class="lens-icon" aria-hidden="true"></span>
-              <p><strong>Spectral layer / human decision channel.</strong> Soft color is the reading you interpret and authorize. It is omitted from tool results. Dark glyphs are exact scan evidence.</p>
-            </div>
-
-            <div class="turn-instruction" id="turnInstruction" aria-live="polite">
-              <span class="turn-instruction-label">Your move</span>
-              <strong>01 / Connect a browser agent</strong>
-              <p>Copy the mission above and ask ChatGPT to use this page's Site tools. Local replay is available for deterministic testing.</p>
-            </div>
-
-            <div class="focus-banner" id="focusBanner" hidden></div>
-
-            <div class="coordinate-frame">
-              <div class="axis axis-top" id="columnAxis" aria-hidden="true"></div>
-              <div class="axis axis-left" id="rowAxis" aria-hidden="true"></div>
-              <div
-                class="chart-grid"
-                id="chartGrid"
-                role="grid"
-                aria-label="12 by 12 expedition chart. Use the terrain palette and select cells to draw."
-              ></div>
-            </div>
-
-            <div class="chart-legend" aria-label="Chart state legend">
-              <span><i class="legend-mark legend-human"></i>Human mark</span>
-              <span><i class="legend-mark legend-proposal"></i>Agent proposal</span>
-              <span><i class="legend-mark legend-evidence"></i>Exact survey evidence</span>
-            </div>
-          </section>
-
-          <aside class="panel notes-panel" aria-labelledby="fieldNotesTitle">
-            <div class="panel-heading notes-heading">
-              <div>
-                <span class="panel-kicker">Live mission channel</span>
-                <h2 id="fieldNotesTitle">Operations log</h2>
-              </div>
-              <span class="pending-count" id="pendingCount">0 pending</span>
-            </div>
-            <section class="protocol-console" aria-labelledby="protocolTraceTitle">
-              <div class="protocol-console-heading">
-                <div>
-                  <span class="trace-light" aria-hidden="true"></span>
-                  <h3 id="protocolTraceTitle">WebMCP call trace</h3>
-                </div>
-                <span id="traceCount">0 calls</span>
-              </div>
-              <p class="protocol-console-intro">Every tool handler records its source, input, result, and read/write class. Mutations stay visible and reviewable.</p>
-              <div class="protocol-trace" id="protocolTrace" aria-live="polite"></div>
-            </section>
-            <div class="feed-label"><span>Shared decisions</span></div>
-            <div class="notes-feed" id="notesFeed" aria-live="polite"></div>
-          </aside>
-        </section>
-
-        <section class="tool-deck" aria-labelledby="toolDeckTitle">
-          <div class="tool-deck-copy">
-            <span class="eyebrow">The rescue protocol</span>
-              <h2 id="toolDeckTitle">A visible test of agent supervision.</h2>
-            <p>
-              Seven Transects is for developers and product teams studying human approval,
-              limited agent budgets, and shared browser state. WebMCP gives the agent six page
-              tools. Every write changes the visible page, and proposals wait for a person.
-            </p>
-          </div>
-          <ol class="tool-list">
-            <li><code>get_expedition_state</code><span>Read the rules and remaining budget</span></li>
-            <li><code>survey_region</code><span>Spend one charge for fixed five-cell transects</span></li>
-            <li><code>inspect_chart</code><span>Read only committed human-approved marks</span></li>
-            <li><code>propose_chart_patch</code><span>Stage translucent cells for review</span></li>
-            <li><code>focus_human_attention</code><span>Ask for a structured human field reading</span></li>
-            <li><code>consult_compass</code><span>Spend one of two broad precision checks</span></li>
-          </ol>
         </section>
       </main>
 
-      <footer>
-        <span>Seven Transects / Rescue Atlas 07 / WebMCP Challenge 2026</span>
-        <span>Local-first / no accounts / no model key / one shared mission state</span>
-      </footer>
+      <footer><span>Label Loop / WebMCP Challenge 2026</span><span>Static app / local model / no account / no model key</span></footer>
     </div>
-
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <dialog class="finale" id="finaleDialog" aria-labelledby="finaleTitle">
-      <div class="seal" id="finaleSeal" aria-hidden="true">VII</div>
-      <span class="eyebrow">Transmission complete</span>
-      <h2 id="finaleTitle">The fleet has its chart.</h2>
-      <p id="finaleVerdict"></p>
-      <div class="finale-score">
-        <div><strong id="finalCoverage">0%</strong><span>charted</span></div>
-        <div><strong id="finalPrecision">0%</strong><span>precision</span></div>
-        <div><strong id="finalTeamwork">0</strong><span>handoffs</span></div>
-      </div>
-      <p class="finale-seed" id="finaleSeed"></p>
-      <div class="finale-actions">
-        <button class="button" id="closeFinaleButton" type="button">Inspect the landing chart</button>
-        <button class="button button-dark" id="newFromFinaleButton" type="button">Open another operation</button>
-      </div>
-    </dialog>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
