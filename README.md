@@ -14,7 +14,7 @@ The initial model has nine seed examples. Twelve new tickets form the active-lea
 
 ## Why WebMCP matters
 
-The page registers seven typed tools with `document.modelContext.registerTool`. A compatible browser agent works with the live model state through those tools instead of reading cards or guessing button behavior.
+The page registers nine typed tools with `document.modelContext.registerTool`. A compatible browser agent works with the live model state through those tools instead of reading cards or guessing button behavior.
 
 The contract also divides authority:
 
@@ -38,6 +38,8 @@ The local replay uses the production handlers for browsers without WebMCP. Every
 | `evaluate_model` | Read | Return accuracy, macro F1, confidence, log loss, and per-class metrics. |
 | `propose_model_config` | Write | Stage Laplace alpha and review-threshold changes. |
 | `inspect_training_history` | Read | Return metric checkpoints and training provenance. |
+| `predict_ticket` | Read | Run current-model inference with probabilities, entropy, and a route-or-review decision. |
+| `inspect_model_diagnostics` | Read | Inspect learned token weights, confusion counts, calibration gap, and log loss. |
 
 ## Run locally
 
@@ -56,9 +58,9 @@ Open the printed URL. Use `Run local tool replay` if the browser does not expose
 npm run verify
 ```
 
-This runs unit tests, a headless browser workflow, and the production build. The browser test registers a `document.modelContext` contract stub, invokes all seven tools, completes a human label, trains the model, evaluates it, and approves a staged configuration.
+This runs unit tests, a headless browser workflow, and the production build. The browser test registers a `document.modelContext` contract stub, invokes all nine tools, inspects learned features, runs inference, completes a human label, trains the model, evaluates it, and approves a staged configuration.
 
-For native testing, open the deployed app in ChatGPT's in-app browser or enable `chrome://flags/#enable-webmcp-testing` in a supported Chrome build. Confirm that the page badge reads `WebMCP live / 7 tools` and that all seven names appear in the browser's tool interface.
+For native testing, open the deployed app in ChatGPT's in-app browser or enable `chrome://flags/#enable-webmcp-testing` in a supported Chrome build. Confirm that the page badge reads `WebMCP live / 9 tools` and that all nine names appear in the browser's tool interface.
 
 Suggested task:
 
@@ -78,7 +80,7 @@ Output directory: dist
 ```text
 index.html               Shared human-agent training workspace
 src/model.js             Online classifier, evaluation, and approval rules
-src/webmcp.js            Seven schemas, handlers, trace projection, registration
+src/webmcp.js            Nine schemas, handlers, trace projection, registration
 src/main.js              UI rendering and human actions
 src/styles.css           Responsive visual system
 test/model.test.js       Model and authority-boundary tests

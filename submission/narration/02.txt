@@ -1,1 +1,1 @@
-Chrome exposes WebMCP on this deployed page, and the green badge confirms seven tools registered through document model context. The browser agent receives typed operations for model state, uncertainty sampling, label requests, training, evaluation, settings, and history.
+Chrome exposes WebMCP on this deployed page, and the green badge confirms nine tools registered through document model context. The browser agent receives typed operations for training, evaluation, learned-model diagnostics, and direct inference. It can query the model without interpreting the page layout.

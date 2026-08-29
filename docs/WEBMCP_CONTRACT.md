@@ -1,6 +1,6 @@
 # WebMCP contract
 
-Label Loop registers seven imperative site tools through `document.modelContext.registerTool`.
+Label Loop registers nine imperative site tools through `document.modelContext.registerTool`.
 
 | Tool | Access | Contract |
 |---|---|---|
@@ -11,6 +11,8 @@ Label Loop registers seven imperative site tools through `document.modelContext.
 | `evaluate_model` | Read | Returns aggregate holdout metrics and per-class precision, recall, and F1. |
 | `propose_model_config` | Write | Stages Laplace alpha and low-confidence review threshold settings with a rationale. |
 | `inspect_training_history` | Read | Returns metric checkpoints and the provenance of trained samples. |
+| `predict_ticket` | Read | Classifies new text and returns probabilities, entropy, threshold, and the route-or-review decision. |
+| `inspect_model_diagnostics` | Read | Returns learned feature weights, aggregate confusion counts, calibration gap, and log loss. |
 
 ## Invariants
 

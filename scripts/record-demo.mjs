@@ -57,7 +57,7 @@ try {
     label.textContent = "Native WebMCP registration";
     document.body.append(label);
   });
-  await page.getByText("WebMCP live / 7 tools").waitFor({ timeout: 15000 });
+  await page.getByText("WebMCP live / 9 tools").waitFor({ timeout: 15000 });
   await spot("#webmcpStatus");
 
   await until(15);
@@ -90,12 +90,13 @@ try {
   await replay("train_confirmed_batch", { maximum: 2 });
   await replay("evaluate_model");
   await replay("inspect_training_history");
+  await replay("inspect_model_diagnostics", { featureLimit: 5 });
   await scrollTo(".metrics", "start");
   await spot(".metrics");
 
   await until(94);
-  await scrollTo(".model-panel", "start");
-  await spot(".history-block");
+  await scrollTo(".diagnostics", "center");
+  await spot(".diagnostics");
 
   await until(106);
   await replay("propose_model_config", {

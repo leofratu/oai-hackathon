@@ -26,6 +26,6 @@ Netlify can use the included `netlify.toml`. Vercel detects Vite automatically; 
 
 1. Open the HTTPS URL and confirm the full training console renders.
 2. Check that `Origin-Agent-Cluster`, `Permissions-Policy`, and `Content-Security-Policy` are present where the host supports custom headers.
-3. Open the URL in a WebMCP-capable browser and confirm seven site tools register.
+3. Open the URL in a WebMCP-capable browser and confirm nine site tools register.
 4. Complete one review, training, evaluation, and configuration proposal cycle.
 5. Reload the page and confirm the deterministic seed state returns.

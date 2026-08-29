@@ -37,7 +37,7 @@ Title: `Label Loop - WebMCP online model training demo`
 Description:
 
 ```text
-Label Loop trains an online support-ticket classifier in the browser with human-confirmed labels and seven WebMCP tools.
+Label Loop trains an online support-ticket classifier in the browser with human-confirmed labels and nine WebMCP tools.
 
 Live app: https://leofratu.github.io/oai-hackathon/
 Source: https://github.com/leofratu/oai-hackathon

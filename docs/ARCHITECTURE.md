@@ -5,7 +5,7 @@ Label Loop is a client-only Vite application. The model, active-learning pool, r
 ## Runtime layers
 
 1. `src/model.js` implements tokenization, online multinomial Naive Bayes, entropy ranking, evaluation, label provenance, and configuration approval.
-2. `src/webmcp.js` exposes seven operations with JSON Schema and records compact read/write trace events.
+2. `src/webmcp.js` exposes nine operations with JSON Schema and records compact read/write trace events.
 3. `src/main.js` renders the same state and owns human-only label and configuration decisions.
 4. `index.html` and `src/styles.css` provide the training console.
 
@@ -24,7 +24,7 @@ Both paths call the same model functions. WebMCP cannot bypass the review queue 
 
 The model keeps counts rather than retraining from scratch. For each confirmed example it increments the class document count and the token counts for that class. Prediction combines the class prior with smoothed token likelihoods, then normalizes the log scores into probabilities.
 
-Normalized predictive entropy ranks review candidates. A fixed nine-item holdout produces aggregate metrics after each training checkpoint. The tool contract does not return holdout rows or answers.
+Normalized predictive entropy ranks review candidates. A fixed nine-item holdout produces aggregate metrics after each training checkpoint. One-vs-rest log-likelihood differences explain the tokens associated with each class. Aggregate confusion counts and the confidence gap expose model errors without returning holdout rows or answers.
 
 ## Trust boundary
 

@@ -10,9 +10,9 @@ Voiceover: "Label Loop is a working online classifier inside a web page. It star
 
 ## 0:15-0:35
 
-Picture: Open the browser's site tool list and show all seven names. Return to the page proof card.
+Picture: Open the browser's site tool list and show all nine names. Return to the page proof card.
 
-Voiceover: "The page registers seven tools through document model context. The browser agent receives typed operations for model state, uncertainty sampling, label requests, training, evaluation, settings, and history. It does not need to interpret this layout."
+Voiceover: "The page registers nine tools through document model context. The browser agent receives typed operations for training, evaluation, diagnostics, and inference. It can query the model without interpreting the page layout."
 
 ## 0:35-0:58
 
@@ -28,9 +28,9 @@ Voiceover: "The replay requests two labels, but the tool schema has no label fie
 
 ## 1:22-1:48
 
-Picture: Call `train_confirmed_batch`, `evaluate_model`, and `inspect_training_history`. Hold on updated example count, class bars, chart, trace, and ledger.
+Picture: Call `train_confirmed_batch`, `evaluate_model`, `inspect_training_history`, and `inspect_model_diagnostics`. Hold on updated example count, learned features, confusion matrix, calibration, and history.
 
-Voiceover: "Now the model increments its document and token counts with my confirmed examples. Predictions are recalculated immediately. The page adds a checkpoint with accuracy, macro F1, confidence, log loss, and per-class scores on a fixed evaluation set."
+Voiceover: "Now the model increments its document and token counts with my confirmed examples. Predictions are recalculated immediately. Diagnostics expose one-vs-rest token weights, aggregate confusion counts, confidence calibration, log loss, and per-class scores without returning individual holdout answers."
 
 ## 1:48-2:12
 
