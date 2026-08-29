@@ -7,8 +7,8 @@
     <meta name="theme-color" content="#071116" />
     <link rel="icon" href="./label-loop-mark.svg" type="image/svg+xml" />
     <title>Label Loop: online model training through WebMCP</title>
-    <script type="module" crossorigin src="./assets/index-USRZUGO3.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CCx6Ioko.css">
+    <script type="module" crossorigin src="./assets/index-DJLCZXZY.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B5Xy35Ob.css">
   </head>
   <body>
     <div class="shell">
@@ -30,7 +30,7 @@
             <p class="hero-lede">
               A multinomial Naive Bayes model learns incrementally from human-confirmed support tickets.
               The agent finds uncertain samples, requests labels, starts bounded training steps, and reports
-              metrics through seven page tools.
+              metrics, explains learned features, and serves predictions through nine page tools.
             </p>
             <div class="hero-actions">
               <button class="button button-primary" id="copyPromptButton" type="button">Copy ChatGPT task</button>
@@ -43,7 +43,7 @@
           <aside class="webmcp-proof" aria-labelledby="proofTitle">
             <div class="proof-topline"><span>Registered on this page</span><strong id="proofState">Checking</strong></div>
             <h2 id="proofTitle">The agent gets a training API, not a pile of buttons.</h2>
-            <div class="tool-manifest" aria-label="Seven WebMCP page tools">
+            <div class="tool-manifest" aria-label="Nine WebMCP page tools">
               <code>get_training_state</code>
               <code>inspect_uncertain_samples</code>
               <code>queue_label_review</code>
@@ -51,6 +51,8 @@
               <code>evaluate_model</code>
               <code>propose_model_config</code>
               <code>inspect_training_history</code>
+              <code>predict_ticket</code>
+              <code>inspect_model_diagnostics</code>
             </div>
             <p id="runtimeProof">Checking whether this browser exposes <code>document.modelContext</code>.</p>
           </aside>
@@ -116,6 +118,28 @@
               <p>Ask the agent to inspect uncertainty and request the samples that would add the most information.</p>
             </div>
           </aside>
+        </section>
+
+        <section class="diagnostics panel" aria-labelledby="diagnosticsTitle">
+          <header class="panel-header diagnostics-header">
+            <div><span class="kicker">Model observability</span><h2 id="diagnosticsTitle">What the classifier learned</h2></div>
+            <span class="model-chip">WebMCP readable</span>
+          </header>
+          <div class="diagnostics-grid">
+            <section>
+              <div class="section-label"><span>Top discriminative tokens</span><small>one-vs-rest log weights</small></div>
+              <div class="feature-grid" id="featureGrid"></div>
+            </section>
+            <section>
+              <div class="section-label"><span>Holdout confusion matrix</span><small>actual rows / predicted columns</small></div>
+              <div class="confusion-grid" id="confusionGrid" role="table" aria-label="Aggregate holdout confusion matrix"></div>
+            </section>
+            <section>
+              <div class="section-label"><span>Calibration check</span><small>confidence against accuracy</small></div>
+              <div class="calibration-stats" id="calibrationStats"></div>
+              <p class="diagnostic-note">Available to agents through <code>inspect_model_diagnostics</code>. New text can be queried with <code>predict_ticket</code>.</p>
+            </section>
+          </div>
         </section>
 
         <section class="lower-grid">
