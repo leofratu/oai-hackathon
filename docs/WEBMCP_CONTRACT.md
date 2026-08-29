@@ -1,31 +1,37 @@
 # WebMCP contract
 
-Seven Transects registers six site tools with `document.modelContext.registerTool` when the browser supports WebMCP.
+Label Loop registers seven imperative site tools through `document.modelContext.registerTool`.
 
-| Tool | Reads or writes | Contract |
+| Tool | Access | Contract |
 |---|---|---|
-| `get_expedition_state` | Read | Returns objectives, public progress, budgets, and collaboration rules. |
-| `survey_region` | Write | Spends one of seven charges and returns a fixed cross-transect. Duplicate centers are rejected. |
-| `inspect_chart` | Read | Returns committed marks, evidence, human observations, and resolved decisions. |
-| `propose_chart_patch` | Write | Stages bounded confidence-coded marks; it never commits them. |
-| `focus_human_attention` | Write | Creates one structured visual-reading question for the person. |
-| `consult_compass` | Write | Spends one of two consultations and returns a broad precision band. |
+| `get_training_state` | Read | Returns model family, labels, counts, configuration, queue, metrics, and collaboration rules. |
+| `inspect_uncertain_samples` | Read | Returns up to eight unlabeled tickets ranked by normalized predictive entropy. |
+| `queue_label_review` | Write | Moves one to three selected tickets into the human review queue. It cannot assign labels. |
+| `train_confirmed_batch` | Write | Incrementally trains on samples whose labels were confirmed through the human UI. |
+| `evaluate_model` | Read | Returns aggregate holdout metrics and per-class precision, recall, and F1. |
+| `propose_model_config` | Write | Stages Laplace alpha and low-confidence review threshold settings with a rationale. |
+| `inspect_training_history` | Read | Returns metric checkpoints and the provenance of trained samples. |
 
 ## Invariants
 
-- The truth array and seed never appear in agent-facing payloads.
-- Exact live correctness is unavailable before the final reveal.
-- At most three proposals and one human question may be pending.
-- Proposal conflicts are recalculated when the person accepts.
-- All mutating operations freeze after the expedition finishes.
-- Seven exact transects alone cannot meet the coverage target.
+- A review request contains sample IDs and a note, never a label.
+- Only samples in `confirmed` state can enter a training batch.
+- At most three samples can be queued for review at once.
+- A second queue cannot replace unresolved human work.
+- Configuration proposals do not change the model until the person accepts them.
+- Individual holdout examples, holdout labels, and review reference labels are excluded from agent-facing results.
+- All inputs are checked again at runtime after JSON Schema validation.
 
-## Visible protocol trace
+## Trace
 
-All six handlers pass through one invocation boundary. After a successful mutation has rendered, that boundary emits an allowlisted trace event containing the tool name, read/write class, compact input, status, and a short result summary. Failures are traced and rethrown. The observer is isolated so a broken trace renderer cannot turn a successful tool call into a failed operation.
+Every handler passes through one invocation boundary. The trace includes the tool name, access class, source, compact input, status, and a short allowlisted summary. It never serializes the entire state or result.
 
-Trace summaries never serialize the full tool result or game state. In particular, they never include the truth array or seed.
+Completed writes remain completed if trace or UI rendering fails. Tool failures are traced and rethrown.
+
+## Registration and cleanup
+
+All tools receive the same `AbortController` signal during registration. If one definition fails, the signal aborts the partial set. The app reports native, fallback, or failed status in the header.
 
 ## Fallback
 
-When WebMCP is unavailable, the app remains playable and provides **Run the WebMCP demo**. This local trace replay calls the same handlers used by a compatible browser agent. It demonstrates the contract and page mutations, but does not claim to replace native tool discovery or an external agent's reasoning.
+`Run local tool replay` invokes the same handlers in a normal browser. The source column reads `local replay`. This path tests state changes and the UI but does not replace native discovery by an external agent.

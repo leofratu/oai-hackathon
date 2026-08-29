@@ -1,1 +1,0 @@
-The next tool stages a patch with exact cells and one cautious inference. It cannot commit the chart. I choose Accept verified, which keeps completed scan evidence and authorized human readings. Runtime checks reject an agent that labels an unsurveyed cell as exact.

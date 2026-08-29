@@ -1,1 +1,0 @@
-Survey region is a scarce write action. It spends one of seven charges and returns exact terrain along a narrow cross. The typed result updates the same chart the person is viewing.

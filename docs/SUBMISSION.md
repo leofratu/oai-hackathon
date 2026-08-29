@@ -2,8 +2,8 @@
 
 ## Project details
 
-- Project: Seven Transects
-- Tagline: A playable test of human approval for browser agents
+- Project: Label Loop
+- Tagline: Train a browser classifier with human labels and WebMCP
 - Live app: https://leofratu.github.io/oai-hackathon/
 - Source: https://github.com/leofratu/oai-hackathon
 - Demo video: Add the public YouTube URL after upload
@@ -11,57 +11,57 @@
 
 ## Short description
 
-Seven Transects is a rescue-mapping game and WebMCP reference app. A browser agent has seven exact scans of a 12 by 12 island. The person sees a noisy field layer and controls every committed map change. The team must mark 72 cells while keeping precision at or above 88%.
+Label Loop is an online machine-learning workbench that runs entirely in the browser. Its multinomial Naive Bayes model classifies support tickets as billing, bug, or access. A browser agent finds high-entropy samples, requests human labels, trains on confirmed examples, checks a fixed holdout, and stages model-setting changes. The person owns label truth and configuration approval.
 
-The page registers six imperative WebMCP tools. The tools read bounded state, spend limited scans, stage evidence-backed patches, request a human reading, consume the person's answer, and return a broad safety band. A visible trace records the source and result of each tool call.
+The page registers seven WebMCP tools and shows every call in a visible trace. No account, backend, model API, or model key is required.
 
 ## Why this use case fits WebMCP
 
-The game depends on shared live page state and different responsibilities. The agent needs exact, structured evidence and bounded actions. The person needs a visible chart, a review step, and control over committed marks. WebMCP connects these roles without asking the agent to infer the meaning of 144 grid buttons.
+Model training is a stateful workflow with several different operations. The agent needs structured predictions, entropy values, queue state, metric checkpoints, and explicit permissions. Reading the page layout would be fragile and would not tell the agent which actions are allowed.
 
-`survey_region` returns typed cells and spends a scarce charge. `propose_chart_patch` may stage a change but cannot commit it. `focus_human_attention` pins a question on the chart, and `inspect_chart` returns the person's authorized answer. Each side contributes information the other side does not own.
+WebMCP gives the open page a typed training API. `inspect_uncertain_samples` returns ranked data instead of forcing the agent to scrape cards. `queue_label_review` requests human work but contains no way to assign a label. `train_confirmed_batch` rejects predictions that a person has not confirmed. `propose_model_config` creates a visible pending proposal instead of changing the model silently.
 
 ## Better user experience
 
-The person can see what the agent read, what it changed, and which evidence supports each proposed mark. Exact scans, agent inference, and human readings use separate labels. Risky actions spend visible budgets. The person can accept verified evidence, reject a patch, or accept every proposed cell. Errors remain on the same page instead of being hidden in a model transcript.
+The person sees the current model, per-class performance, review queue, accuracy history, and every agent call in one workspace. Agent suggestions arrive at the exact point where a human decision is needed. Low-confidence test predictions are marked for review using the approved threshold.
 
-## What the person and agent can do together
+The model update is immediate and local. After the person labels a ticket, the next training call changes token counts, recalculates predictions, and adds an evaluation checkpoint without a server round trip.
 
-A normal browser agent could click cells, but it would have no reliable contract for scan budgets, evidence provenance, proposal status, or human answers. Here, the agent can reason over typed survey results while the person interprets the field layer and authorizes state changes. The resulting chart records both contributions.
+## What the person and agent do together
 
-The app is also a small training and reference project for developers testing approval boundaries, limited agent actions, and shared browser state.
+The agent handles repeated analysis: read state, rank uncertainty, select a bounded batch, train confirmed labels, compare metrics, and suggest settings. The person supplies the authoritative category for ambiguous tickets and decides whether a configuration change is acceptable.
+
+Neither side completes the intended loop alone. The agent cannot create training truth, and the person does not need to calculate entropy or maintain model counts by hand.
 
 ## WebMCP implementation
 
-The top-level page calls `document.modelContext.registerTool` for six tools. Each tool has a JSON Schema, a concise description, runtime validation, and a `readOnlyHint` where applicable. Write tools call the same state functions used by the visible interface. Registration uses an `AbortController` so a failed batch does not leave partial tools registered.
+The top-level page calls `document.modelContext.registerTool` for seven tools. Each definition includes JSON Schema, a specific description, read-only annotations where applicable, runtime validation, and an execute handler. All handlers operate on the same state rendered by the page.
 
-The hidden truth map, seed, and exact live precision are excluded from tool output. Exact and human-reading provenance is checked against completed surveys and recorded answers. Agent proposals remain reversible until a person accepts them.
+Registration uses an `AbortController` so one failed definition removes the partial tool set. A shared invocation wrapper records compact trace events and isolates rendering errors from completed writes. Agent-facing results exclude individual holdout rows and bundled review reference labels.
 
-## Judge testing instructions
+## Judge testing
 
-1. Open the live app as a top-level page in ChatGPT's in-app browser.
-2. Open Site tools in the address bar and confirm six registered tools.
-3. Select **Copy ChatGPT mission** and send the copied prompt.
-4. Confirm `get_expedition_state` and `inspect_chart` appear as reads in the page trace.
-5. Let the agent call `survey_region`. Confirm one scan is spent and exact evidence appears on the chart.
-6. Let the agent call `propose_chart_patch`. Choose **Accept verified** and confirm only survey evidence or authorized human readings commit.
-7. Answer a question created by `focus_human_attention`, then let the agent call `inspect_chart` to read the answer.
-8. Call `consult_compass` and confirm it spends one of two checks without revealing exact mistakes.
-
-Chrome testing requires Chrome 149 or newer with `chrome://flags/#enable-webmcp-testing` enabled.
+1. Open the live app in ChatGPT's in-app browser.
+2. Confirm `WebMCP live / 7 tools` and inspect the tool list.
+3. Select `Copy ChatGPT task` and send the prompt.
+4. Confirm that two high-entropy tickets appear in `Label review` without assigned labels.
+5. Assign both labels in the UI.
+6. Ask the agent to train and evaluate. Watch training examples, metrics, history, trace, and ledger update.
+7. Ask for a configuration proposal. Confirm the model does not change until `Accept settings` is selected.
+8. Enter a new ticket in `Try the current classifier` and check whether the approved confidence threshold sends it to human review.
 
 ## Submission checklist
 
 - [x] Public source repository
-- [x] Complete source, assets, build instructions, and tests
-- [x] MIT license detected by GitHub
+- [x] Complete source, build instructions, tests, and MIT license
 - [x] Imperative `document.modelContext.registerTool` implementation
-- [x] Working HTTPS deployment
+- [x] Seven non-trivial tools over shared live state
+- [x] Human label and configuration approval boundaries
 - [x] Required four-part text description
-- [ ] Native Site tools check in ChatGPT's in-app browser
-- [ ] Public YouTube demo shorter than three minutes
-- [ ] Confirm entrant is above the age of majority and not in an excluded location
+- [ ] Verify the final deployment with native WebMCP after publishing this rewrite
+- [ ] Upload a public YouTube demo shorter than three minutes
+- [ ] Confirm entrant age and location eligibility
 
-The official deadline is September 3, 2026 at 1:00 PM PDT. In Bangkok, that is September 4, 2026 at 3:00 AM ICT. Do not change the submitted repository, live site, or Devpost entry after the deadline while judging is active.
+The official deadline supplied by the challenge is September 3, 2026 at 10:00 PM GMT+2. That is September 4, 2026 at 3:00 AM in Bangkok.
 
-Sources: [official rules](https://webmcp.devpost.com/rules), [challenge resources](https://webmcp.devpost.com/resources), [Chrome WebMCP documentation](https://developer.chrome.com/docs/ai/webmcp), [OpenAI Site tools documentation](https://learn.chatgpt.com/docs/webmcp).
+References: [official rules](https://webmcp.devpost.com/rules), [challenge resources](https://webmcp.devpost.com/resources), [Chrome WebMCP documentation](https://developer.chrome.com/docs/ai/webmcp), [OpenAI WebMCP guide](https://learn.chatgpt.com/docs/webmcp).

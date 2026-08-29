@@ -1,1 +1,0 @@
-This recording machine has Chrome 145, so the orange badge correctly reports that native WebMCP is off. The deployed page still registers six tools through document model context. In ChatGPT's browser or Chrome 149 and later, those definitions appear as Site tools.

@@ -1,1 +1,0 @@
-Seven Transects is a playable WebMCP test for supervising a browser agent. We have seven scans to map half of this island at 88 percent precision.

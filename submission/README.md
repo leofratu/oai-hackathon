@@ -1,17 +1,16 @@
-# Demo production files
+# Demo production
 
-`docs/DEMO_SCRIPT.md` is the final native-browser shot list. The files here support an honest local review cut when Chrome 149 or ChatGPT's browser is unavailable.
+The shot list and voiceover are in `docs/DEMO_SCRIPT.md`.
 
-Run the app recording:
+The final video should contain native WebMCP discovery, one complete human-agent training cycle, and a visible model-setting approval. A local replay recording can be used for review footage only if its `local replay` source label remains visible.
 
-```bash
-node scripts/record-review-demo.mjs
-```
+Export requirements:
 
-The recording labels fallback calls as `local replay`. It must not be presented as native Site tools footage.
+- shorter than 3 minutes;
+- 1920 by 1080 at 30 frames per second;
+- H.264 video and AAC audio;
+- narration near -16 LUFS and true peak below -1.5 dB;
+- reviewed burned-in captions; and
+- public or unlisted YouTube URL for Devpost.
 
-Generate each narration segment with a neural TTS voice, align the segments at the times in `captions.srt`, then mix them with the recorded WebM video. The final export target is 1920 by 1080, H.264, AAC, under three minutes, and about -16 LUFS.
-
-Generated audio and video go in `submission/render/`, which is excluded from Git.
-
-The reviewed local export is `submission/render/seven-transects-demo-review-v2.mp4`. It is 1920 by 1080, 2 minutes 57 seconds, H.264 with AAC audio, and includes burned-in captions. Replace its native-status segment with a real Site tools capture before uploading the final Devpost video.
+Generated audio and video belong in `submission/render/`, which is excluded from Git.
