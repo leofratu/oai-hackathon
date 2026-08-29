@@ -1,0 +1,1 @@
+On the next turn, the model increments its document and token counts with my confirmed examples. Predictions are recalculated immediately. The page adds a checkpoint with accuracy, macro F1, confidence, log loss, and per-class scores on a fixed evaluation set. Individual holdout answers are not returned to the agent.

@@ -16,15 +16,15 @@ Voiceover: "The page registers seven tools through document model context. The b
 
 ## 0:35-0:58
 
-Picture: Ask the agent to call `get_training_state` and `inspect_uncertain_samples`. Show the trace and entropy-ranked cards.
+Picture: Change the source slate to `Labeled local handler replay`, run the first turn, and show the trace and entropy-ranked cards.
 
-Voiceover: "The first calls read aggregate state and rank the unlabeled pool by normalized predictive entropy. Entropy is high when the class probabilities are close, so these tickets are useful candidates for a person to review. Holdout rows and reference labels stay out of tool results."
+Voiceover: "For this recorded run, I use the labeled local replay so each step is predictable and easy to inspect. It calls the same production handlers. The first calls read aggregate state and rank the unlabeled pool by normalized predictive entropy. High entropy means the class probabilities are close, so these tickets are useful candidates for human review."
 
 ## 0:58-1:22
 
-Picture: The agent calls `queue_label_review` for two tickets. Show the review panel and select the correct label on each card.
+Picture: The replay calls `queue_label_review` for two tickets. Show the review panel and select the correct label on each card.
 
-Voiceover: "The agent requests two labels, but the tool schema has no label field. I assign the authoritative categories here. Until I do that, the training tool rejects these samples. This prevents agent guesses from becoming training truth."
+Voiceover: "The replay requests two labels, but the tool schema has no label field. I assign the authoritative categories on the page. Until I do that, the training tool rejects these samples. Agent predictions cannot become training truth without this human action."
 
 ## 1:22-1:48
 

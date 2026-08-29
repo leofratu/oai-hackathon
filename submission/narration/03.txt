@@ -1,0 +1,1 @@
+For this recorded run, I use the labeled local replay so each step is predictable and easy to inspect. It calls the same production handlers. The first calls read aggregate state and rank the unlabeled pool by normalized predictive entropy. High entropy means the class probabilities are close, so these tickets are useful candidates for human review.

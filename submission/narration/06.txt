@@ -1,0 +1,1 @@
+The agent can recommend a different Laplace smoothing value and low-confidence review threshold. The proposal appears beside the review queue and has no effect until I accept it. After approval, the threshold controls whether a new prediction is safe to route or should go to a person.

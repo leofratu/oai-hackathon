@@ -1,0 +1,1 @@
+The replay requests two labels, but the tool schema has no label field. I assign the authoritative categories on the page. Until I do that, the training tool rejects these samples. Agent predictions cannot become training truth without this human action.

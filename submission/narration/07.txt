@@ -1,0 +1,1 @@
+I can now test the current classifier with fresh text. A clear export failure routes to the bug class with enough confidence. An ambiguous payment and login report stays below the approved threshold and is marked for human review. The decision uses the model state we just changed.

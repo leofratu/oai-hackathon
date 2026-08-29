@@ -1,0 +1,1 @@
+The trace keeps WebMCP reads and writes visible, and the ledger separates agent requests, human labels, and model updates. Label Loop is deployed as a static app. The live site, source, contracts, and tests are ready for judge review.

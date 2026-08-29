@@ -1,0 +1,1 @@
+Label Loop is a working online classifier inside a web page. It starts with nine support tickets and learns new billing, bug, and access examples during the session. No backend or model API is involved.
