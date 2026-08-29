@@ -43,4 +43,4 @@ Record the native tool list and one human-agent training cycle for the submissio
 
 ## Current native result
 
-On August 29, 2026, the deployed page was opened in Chrome 152 with WebMCP enabled. `document.modelContext` was present, `registerTool` was a function, and the app completed registration with the badge `WebMCP live / 7 tools`. The registered definitions contained four reads and three writes. A final external-agent invocation capture in ChatGPT is still required for the submission video.
+On August 29, 2026, the deployed page was opened in Chrome 152 with WebMCP enabled. `document.modelContext` was present, `registerTool` was a function, and the app completed registration with the badge `WebMCP live / 9 tools`. The registered definitions contained six reads and three writes, including model diagnostics and direct inference. The console remained free of errors. A final external-agent invocation capture in ChatGPT is still required for the submission video.

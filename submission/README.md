@@ -23,12 +23,12 @@ Generated audio and video belong in `submission/render/`, which is excluded from
 
 `submission/render/label-loop-demo-final.mp4` has been checked with `ffprobe` and `ebur128`:
 
-- duration: 2 minutes 49.6 seconds;
+- duration: 2 minutes 49.7 seconds;
 - video: 1920 by 1080, H.264, 30 fps;
 - audio: AAC, 48 kHz stereo;
 - integrated loudness: -16.4 LUFS;
-- true peak: -4.5 dBFS; and
-- file size: 19 MB.
+- true peak: -4.4 dBFS; and
+- file size: 21 MB.
 
 ## YouTube metadata
 

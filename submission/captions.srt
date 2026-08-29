@@ -12,83 +12,83 @@ bug, and access examples during the session.
 No backend or model API is involved.
 
 4
-00:00:17,000 --> 00:00:23,800
-Chrome exposes WebMCP on this deployed page.
+00:00:16,600 --> 00:00:23,200
+Chrome exposes WebMCP on this deployed page,
+and the green badge confirms nine registered tools.
 
 5
-00:00:23,800 --> 00:00:30,600
-The green badge confirms seven tools registered
-through document model context.
+00:00:23,200 --> 00:00:30,500
+The browser agent receives typed operations for training,
+evaluation, learned-model diagnostics, and direct inference.
 
 6
-00:00:30,600 --> 00:00:37,568
-The browser agent receives typed operations for state, uncertainty,
-label requests, training, evaluation, settings, and history.
+00:00:30,500 --> 00:00:38,392
+It can query the model without interpreting the page layout.
 
 7
-00:00:38,300 --> 00:00:44,200
+00:00:39,000 --> 00:00:45,000
 For this recorded run, I use the labeled local replay
 so each step is predictable and easy to inspect.
 
 8
-00:00:44,200 --> 00:00:50,300
+00:00:45,000 --> 00:00:51,100
 It calls the same production handlers.
 
 9
-00:00:50,300 --> 00:00:56,300
+00:00:51,100 --> 00:00:57,100
 The first calls read aggregate state and rank the unlabeled pool
 by normalized predictive entropy.
 
 10
-00:00:56,300 --> 00:01:02,444
+00:00:57,100 --> 00:01:03,144
 High entropy means the class probabilities are close,
 so these tickets are useful candidates for human review.
 
 11
-00:01:03,200 --> 00:01:09,300
+00:01:03,800 --> 00:01:09,900
 The replay requests two labels,
 but the tool schema has no label field.
 
 12
-00:01:09,300 --> 00:01:15,400
+00:01:09,900 --> 00:01:16,000
 I assign the authoritative categories on the page.
 Until I do that, the training tool rejects these samples.
 
 13
-00:01:15,400 --> 00:01:21,296
+00:01:16,000 --> 00:01:21,896
 Agent predictions cannot become training truth
 without this human action.
 
 14
-00:01:22,000 --> 00:01:27,700
+00:01:22,500 --> 00:01:28,200
 On the next turn, the model increments its document and token counts
 with my confirmed examples.
 
 15
-00:01:27,700 --> 00:01:33,400
+00:01:28,200 --> 00:01:33,900
 Predictions are recalculated immediately.
 
 16
-00:01:33,400 --> 00:01:39,200
-The page adds a checkpoint with accuracy, macro F1, confidence,
-log loss, and per-class scores on a fixed evaluation set.
+00:01:33,900 --> 00:01:39,700
+Diagnostics expose one-versus-rest token weights, aggregate confusion
+counts, confidence calibration, log loss, and per-class scores.
 
 17
-00:01:39,200 --> 00:01:44,584
+00:01:39,700 --> 00:01:45,012
 Individual holdout answers are not returned to the agent.
 
 18
-00:01:45,500 --> 00:01:52,100
+00:01:45,700 --> 00:01:52,300
 The agent can recommend a different Laplace smoothing value
 and low-confidence review threshold.
 
 19
-00:01:52,100 --> 00:01:58,700
+00:01:52,300 --> 00:01:58,900
 The proposal appears beside the review queue
 and has no effect until I accept it.
 
 20
-00:01:58,700 --> 00:02:05,156
+00:01:58,900 --> 00:02:05,356
 After approval, the threshold controls whether a new prediction
 is safe to route or should go to a person.
 
