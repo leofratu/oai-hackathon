@@ -38,3 +38,7 @@ Use ChatGPT's in-app browser or Chrome with `chrome://flags/#enable-webmcp-testi
 10. Stage settings with `propose_model_config` and confirm the values remain unchanged until the person accepts them.
 
 Record the native tool list and one human-agent training cycle for the submission video. Local replay footage must retain its visible source label.
+
+## Current native result
+
+On August 29, 2026, the deployed page was opened in Chrome 152 with WebMCP enabled. `document.modelContext` was present, `registerTool` was a function, and the app completed registration with the badge `WebMCP live / 7 tools`. The registered definitions contained four reads and three writes. A final external-agent invocation capture in ChatGPT is still required for the submission video.

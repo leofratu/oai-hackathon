@@ -58,7 +58,8 @@ Registration uses an `AbortController` so one failed definition removes the part
 - [x] Seven non-trivial tools over shared live state
 - [x] Human label and configuration approval boundaries
 - [x] Required four-part text description
-- [ ] Verify the final deployment with native WebMCP after publishing this rewrite
+- [x] Verify native registration of all seven tools in Chrome 152
+- [ ] Capture a full external-agent invocation cycle in ChatGPT
 - [ ] Upload a public YouTube demo shorter than three minutes
 - [ ] Confirm entrant age and location eligibility
 
